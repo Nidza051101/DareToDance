@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{99D19084-66C6-4F90-B050-5991E205217D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6E41C264-0D4C-45EB-89FE-E4E2B69995E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DareToDance.Domain", "src\DareToDance.Domain\DareToDance.Domain.csproj", "{9796E858-C8AB-40EA-9AC1-D2B98289449D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DareToDance.Application", "src\DareToDance.Application\DareToDance.Application.csproj", "{3915EF2A-F3FA-483C-B699-663CEAC9F4D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DareToDance.Infrastructure", "src\DareToDance.Infrastructure\DareToDance.Infrastructure.csproj", "{60F38728-FBF8-4775-A8A6-D13C942DA398}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DareToDance.Api", "src\DareToDance.Api\DareToDance.Api.csproj", "{0CE15610-78EA-422B-9E7E-866D87117505}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{06F1E40E-CA55-4AEA-A493-C414BF968195}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "requests", "requests", "{14194BD0-0108-4540-AC92-084CACEED67A}"
+	ProjectSection(SolutionItems) = preProject
+		docs\requests\Login.http = docs\requests\Login.http
+		docs\requests\Register.http = docs\requests\Register.http
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9796E858-C8AB-40EA-9AC1-D2B98289449D} = {99D19084-66C6-4F90-B050-5991E205217D}
+		{3915EF2A-F3FA-483C-B699-663CEAC9F4D0} = {99D19084-66C6-4F90-B050-5991E205217D}
+		{60F38728-FBF8-4775-A8A6-D13C942DA398} = {99D19084-66C6-4F90-B050-5991E205217D}
+		{0CE15610-78EA-422B-9E7E-866D87117505} = {99D19084-66C6-4F90-B050-5991E205217D}
+		{14194BD0-0108-4540-AC92-084CACEED67A} = {06F1E40E-CA55-4AEA-A493-C414BF968195}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9796E858-C8AB-40EA-9AC1-D2B98289449D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9796E858-C8AB-40EA-9AC1-D2B98289449D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9796E858-C8AB-40EA-9AC1-D2B98289449D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9796E858-C8AB-40EA-9AC1-D2B98289449D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3915EF2A-F3FA-483C-B699-663CEAC9F4D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3915EF2A-F3FA-483C-B699-663CEAC9F4D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3915EF2A-F3FA-483C-B699-663CEAC9F4D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3915EF2A-F3FA-483C-B699-663CEAC9F4D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60F38728-FBF8-4775-A8A6-D13C942DA398}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60F38728-FBF8-4775-A8A6-D13C942DA398}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60F38728-FBF8-4775-A8A6-D13C942DA398}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60F38728-FBF8-4775-A8A6-D13C942DA398}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CE15610-78EA-422B-9E7E-866D87117505}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CE15610-78EA-422B-9E7E-866D87117505}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CE15610-78EA-422B-9E7E-866D87117505}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CE15610-78EA-422B-9E7E-866D87117505}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
