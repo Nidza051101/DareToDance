@@ -1,5 +1,5 @@
 using DareToDance.Application.Common.Persistence;
-using DareToDance.Application.Services.Authentication.Jwt;
+using DareToDance.Application.Services.Authentication.Otp;
 using DareToDance.Domain.Common.Errors;
 using DareToDance.Domain.Entities;
 using ErrorOr;
@@ -7,29 +7,31 @@ using MediatR;
 
 namespace DareToDance.Application.Services.Authentication.Commands.Register;
 
-public class RegisterCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository)
-    : IRequestHandler<RegisterCommand, ErrorOr<AuthenticationResult>>
+public class RegisterCommandHandler(IUserRepository userRepository, OtpIssuer otpIssuer)
+    : IRequestHandler<RegisterCommand, ErrorOr<OtpChallengeResult>>
 {
-    public Task<ErrorOr<AuthenticationResult>> Handle(RegisterCommand command, CancellationToken cancellationToken)
+    public async Task<ErrorOr<OtpChallengeResult>> Handle(RegisterCommand command, CancellationToken cancellationToken)
     {
         if (userRepository.GetUserByEmail(command.Email) is not null)
         {
-            return Task.FromResult<ErrorOr<AuthenticationResult>>(Errors.User.DuplicateEmail);
+            return Errors.User.DuplicateEmail;
         }
 
         var user = new User
         {
             FirstName = command.FirstName,
             LastName = command.LastName,
-            Email = command.Email,
-            Password = command.Password
+            Email = command.Email
         };
 
         userRepository.Add(user);
 
-        var token = jwtTokenGenerator.GenerateToken(user.Id, command.FirstName, command.LastName);
+        var issued = await otpIssuer.IssueAsync(user, OtpPurpose.Login, cancellationToken);
+        if (issued.IsError)
+        {
+            return issued.Errors;
+        }
 
-        return Task.FromResult<ErrorOr<AuthenticationResult>>(
-            new AuthenticationResult(user.Id, command.FirstName, command.LastName, command.Email, token));
+        return OtpChallengeResult.CodeSent;
     }
 }

@@ -5,15 +5,15 @@ namespace DareToDance.Infrastructure.Persistence;
 
 public class UserRepository : IUserRepository
 {
-    private static readonly List<User> Users = [];
+    private readonly List<User> _users = [];
 
     public User? GetUserByEmail(string email)
     {
-        return Users.SingleOrDefault(user => user.Email == email);
+        return _users.SingleOrDefault(user => user.Email == email);
     }
 
     public void Add(User user)
     {
-        Users.Add(user);
+        _users.Add(user);
     }
 }

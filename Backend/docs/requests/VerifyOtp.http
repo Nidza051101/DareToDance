@@ -1,0 +1,9 @@
+@host=http://localhost:5015
+
+POST {{host}}/auth/verify-otp
+Content-Type: application/json
+
+{
+  "email": "nikola@andric.com",
+  "code": "706168"
+}
