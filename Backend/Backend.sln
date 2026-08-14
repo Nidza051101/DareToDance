@@ -12,8 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{06F1E40E-C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "requests", "requests", "{14194BD0-0108-4540-AC92-084CACEED67A}"
 	ProjectSection(SolutionItems) = preProject
-		docs\requests\VerifyOtp.http = docs\requests\VerifyOtp.http
+		docs\requests\CreateUser.http = docs\requests\CreateUser.http
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DareToDance.Infrastructure", "src\DareToDance.Infrastructure\DareToDance.Infrastructure.csproj", "{8E3DC1BA-2584-4884-957E-7D7590A0A01A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,18 @@ Global
 		{0CE15610-78EA-422B-9E7E-866D87117505}.Release|x64.Build.0 = Release|Any CPU
 		{0CE15610-78EA-422B-9E7E-866D87117505}.Release|x86.ActiveCfg = Release|Any CPU
 		{0CE15610-78EA-422B-9E7E-866D87117505}.Release|x86.Build.0 = Release|Any CPU
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A}.Debug|x64.Build.0 = Debug|Any CPU
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A}.Debug|x86.Build.0 = Debug|Any CPU
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A}.Release|x64.ActiveCfg = Release|Any CPU
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A}.Release|x64.Build.0 = Release|Any CPU
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A}.Release|x86.ActiveCfg = Release|Any CPU
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,5 +71,6 @@ Global
 		{9796E858-C8AB-40EA-9AC1-D2B98289449D} = {99D19084-66C6-4F90-B050-5991E205217D}
 		{0CE15610-78EA-422B-9E7E-866D87117505} = {99D19084-66C6-4F90-B050-5991E205217D}
 		{14194BD0-0108-4540-AC92-084CACEED67A} = {06F1E40E-CA55-4AEA-A493-C414BF968195}
+		{8E3DC1BA-2584-4884-957E-7D7590A0A01A} = {99D19084-66C6-4F90-B050-5991E205217D}
 	EndGlobalSection
 EndGlobal

@@ -7,4 +7,19 @@
       <UserSecretsId>2b5f147a-c002-4778-aea9-aa806c8c1f93</UserSecretsId>
   </PropertyGroup>
 
+    <ItemGroup>
+      <!-- MediatR 12.5.0 = poslednja Apache-2.0 verzija; od v13 traži license key -->
+      <PackageReference Include="MediatR" Version="12.5.0" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+      <!-- Design je potreban za dotnet ef komande; ne curi u runtime -->
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DareToDance.Infrastructure\DareToDance.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>

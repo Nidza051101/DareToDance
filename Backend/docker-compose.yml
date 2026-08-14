@@ -1,0 +1,37 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: daretodance-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Database: Host=postgres;Port=5432;Database=daretodance;Username=daretodance;Password=daretodance;Include Error Detail=true
+    ports:
+      - "5015:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:18-alpine
+    container_name: daretodance-postgres
+    environment:
+      POSTGRES_USER: daretodance
+      POSTGRES_PASSWORD: daretodance
+      POSTGRES_DB: daretodance
+    ports:
+      - "5432:5432"
+    volumes:
+      - daretodance-pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U daretodance -d daretodance"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  daretodance-pgdata:

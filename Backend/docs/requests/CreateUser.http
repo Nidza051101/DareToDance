@@ -1,0 +1,34 @@
+@host = http://localhost:5015
+
+### Create user — 201 Created + Location header
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+  "email": "ana.petrovic@example.com",
+  "firstName": "Ana",
+  "lastName": "Petrovic",
+  "password": "Sup3rSecret!"
+}
+
+### Isti email ponovo — 409 Conflict (User.DuplicateEmail)
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+  "email": "ana.petrovic@example.com",
+  "firstName": "Ana",
+  "lastName": "Petrovic",
+  "password": "Sup3rSecret!"
+}
+
+### Nevalidan zahtev — 400 ValidationProblem (los email, prazno ime, kratka lozinka)
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+  "email": "not-an-email",
+  "firstName": "",
+  "lastName": "Petrovic",
+  "password": "short"
+}
