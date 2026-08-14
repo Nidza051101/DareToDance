@@ -1,18 +1,8 @@
-using System.Text;
-using DareToDance.Application.Common.Persistence;
-using DareToDance.Application.Common.Security;
 using DareToDance.Application.Common.Services;
-using DareToDance.Application.Services.Authentication.Jwt;
 using DareToDance.Application.Services.Authentication.Otp;
-using DareToDance.Infrastructure.Authentication;
-using DareToDance.Infrastructure.Persistence;
 using DareToDance.Infrastructure.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
 
 namespace DareToDance.Infrastructure;
 
@@ -26,7 +16,7 @@ public static class DependencyInjection
             services.AddOtp();
 
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-            services.AddSingleton<IUserRepository, UserRepository>();
+            //services.AddSingleton<IUserRepository, UserRepository>();
 
             return services;
         }
@@ -38,8 +28,8 @@ public static class DependencyInjection
                 .ValidateDataAnnotations()
                 .ValidateOnStart();
 
-            services.AddSingleton<IOtpCodeGenerator, OtpCodeGenerator>();
-            services.AddSingleton<IOtpRepository, OtpRepository>();
+            //services.AddSingleton<IOtpCodeGenerator, OtpCodeGenerator>();
+            //services.AddSingleton<IOtpRepository, OtpRepository>();
             services.AddSingleton<IEmailSender, ConsoleEmailSender>();
 
             return services;
@@ -47,6 +37,7 @@ public static class DependencyInjection
 
         private IServiceCollection AddAuth(ConfigurationManager configuration)
         {
+            /*
             services.AddOptions<JwtSettings>()
                 .BindConfiguration(JwtSettings.SectionName)
                 .ValidateDataAnnotations()
@@ -82,6 +73,7 @@ public static class DependencyInjection
                         RoleClaimType = "role",
                     };
                 });
+                */
 
             return services;
         }

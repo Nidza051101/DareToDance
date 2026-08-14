@@ -19,9 +19,4 @@
       <ProjectReference Include="..\DareToDance.Domain\DareToDance.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Services\Authentication\Commands\" />
-      <Folder Include="Services\Authentication\Queries\" />
-    </ItemGroup>
-
 </Project>

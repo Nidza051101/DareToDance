@@ -7,9 +7,4 @@
       <UserSecretsId>2b5f147a-c002-4778-aea9-aa806c8c1f93</UserSecretsId>
   </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\DareToDance.Application\DareToDance.Application.csproj" />
-      <ProjectReference Include="..\DareToDance.Infrastructure\DareToDance.Infrastructure.csproj" />
-    </ItemGroup>
-
 </Project>

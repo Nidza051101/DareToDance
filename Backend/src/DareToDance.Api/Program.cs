@@ -1,5 +1,3 @@
-using DareToDance.Application;
-using DareToDance.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -7,10 +5,6 @@ var builder = WebApplication.CreateBuilder(args);
     {
         builder.Configuration.AddUserSecrets<Program>(optional: true, reloadOnChange: true);
     }
-
-    builder.Services
-        .AddApplication()
-        .AddInfrastructure(builder.Configuration);
     
     builder.Services.AddControllers();
 }
