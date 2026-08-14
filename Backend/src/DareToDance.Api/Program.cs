@@ -18,7 +18,3 @@ var app = builder.Build();
 
     app.Run();
 }
-
-// makes the implicit Program class visible to WebApplicationFactory in integration tests
-public partial class Program;
-
