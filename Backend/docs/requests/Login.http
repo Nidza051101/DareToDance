@@ -1,9 +1,0 @@
-@host=http://localhost:5015
-
-
-POST {{host}}/auth/login
-Content-Type: application/json
-
-{
-  "email": "nikola@andric.com"
-}

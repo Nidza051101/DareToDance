@@ -12,10 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{06F1E40E-C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "requests", "requests", "{14194BD0-0108-4540-AC92-084CACEED67A}"
 	ProjectSection(SolutionItems) = preProject
-		docs\requests\Login.http = docs\requests\Login.http
-		docs\requests\Register.http = docs\requests\Register.http
-		docs\requests\Me.http = docs\requests\Me.http
-		docs\requests\ResendOtp.http = docs\requests\ResendOtp.http
 		docs\requests\VerifyOtp.http = docs\requests\VerifyOtp.http
 	EndProjectSection
 EndProject

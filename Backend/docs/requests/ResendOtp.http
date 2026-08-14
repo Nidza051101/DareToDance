@@ -1,8 +1,0 @@
-@host=http://localhost:5015
-
-POST {{host}}/auth/resend-otp
-Content-Type: application/json
-
-{
-  "email": "nikola@andric.com"
-}
