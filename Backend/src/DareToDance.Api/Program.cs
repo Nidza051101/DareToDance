@@ -1,4 +1,3 @@
-using DareToDance.Api.Common.Endpoints;
 using DareToDance.Api.Common.Extensions;
 using DareToDance.Infrastructure;
 
@@ -8,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
     {
         builder.Configuration.AddUserSecrets<Program>(optional: true, reloadOnChange: true);
     }
+
+    builder.AddObservability();
 
     builder.Services.AddProblemDetails();
     builder.Services.AddControllers();
@@ -23,11 +24,11 @@ var app = builder.Build();
     }
 
     app.UseExceptionHandler();
+    app.UseObservability();
     app.UseHttpsRedirection();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
-    app.MapEndpoints();
 
     app.Run();
 }

@@ -1,7 +1,6 @@
-using DareToDance.Api.Common.Endpoints;
-using DareToDance.Api.Common.Results;
 using DareToDance.Api.Features.Users.Shared;
-using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DareToDance.Api.Features.Users.CreateUser;
 
@@ -15,22 +14,19 @@ public sealed record CreateUserRequest(
         => $"CreateUserRequest {{ Email = {Email}, FirstName = {FirstName}, LastName = {LastName}, Password = [REDACTED] }}";
 }
 
-public sealed class CreateUserEndpoint : IApiEndpoint
+public sealed class CreateUserEndpoint : UsersEndpointBase
 {
-    public void Map(IEndpointRouteBuilder app)
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<IActionResult> Handle(CreateUserRequest request, CancellationToken cancellationToken)
     {
-        app.MapPost(UserRoutes.Base,
-                async (CreateUserRequest request, ISender sender, CancellationToken cancellationToken) =>
-                {
-                    var result = await sender.Send(request.ToCommand(), cancellationToken);
+        var result = await Sender.Send(request.ToCommand(), cancellationToken);
 
-                    return result.Match(
-                        user => Results.Created(
-                            $"{UserRoutes.Base}/{user.Id.Value}",
-                            user.ToResponse()),
-                        errors => errors.ToProblem());
-                })
-            .WithName("CreateUser")
-            .WithTags("Users");
+        return result.Match(
+            user => CreatedAtRoute(
+                "GetUserById",
+                new { id = user.Id.Value },
+                user.ToResponse()),
+            Problem);
     }
 }

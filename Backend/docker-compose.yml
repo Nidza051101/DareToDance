@@ -7,6 +7,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Database: Host=postgres;Port=5432;Database=daretodance;Username=daretodance;Password=daretodance;Include Error Detail=true
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://aspire-dashboard:18889
     ports:
       - "5015:8080"
     depends_on:
@@ -31,6 +32,17 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
+    restart: unless-stopped
+
+  # standalone Aspire dashboard — in-memory telemetrija, gasi se zajedno sa kontejnerom
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+    container_name: daretodance-aspire-dashboard
+    environment:
+      DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: "true"
+    ports:
+      - "18888:18888" # UI -> http://localhost:18888
+      - "4317:18889"  # OTLP gRPC (host 4317 -> container 18889)
     restart: unless-stopped
 
 volumes:

@@ -15,7 +15,7 @@ public sealed record CreateUserCommand(
     string LastName,
     string Password) : IRequest<ErrorOr<User>>
 {
-    // da plaintext lozinka nikad ne zavrsi u logovima preko record ToString-a
+    
     public override string ToString()
         => $"CreateUserCommand {{ Email = {Email}, FirstName = {FirstName}, LastName = {LastName}, Password = [REDACTED] }}";
 }
@@ -53,7 +53,6 @@ public sealed class CreateUserCommandHandler(
                 ConstraintName: "ix_users_email"
             })
         {
-            // race sa paralelnim upisom istog email-a — unique indeks je poslednja linija odbrane
             return UserErrors.DuplicateEmail;
         }
 
