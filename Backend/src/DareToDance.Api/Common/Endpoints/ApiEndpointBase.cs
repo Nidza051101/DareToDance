@@ -10,9 +10,7 @@ namespace DareToDance.Api.Common.Endpoints;
 [Authorize]
 public abstract class ApiEndpointBase : ControllerBase
 {
-    private ISender? _sender;
-
-    protected ISender Sender => _sender ??= HttpContext.RequestServices.GetRequiredService<ISender>();
+    protected ISender Sender => field ??= HttpContext.RequestServices.GetRequiredService<ISender>();
 
     protected IActionResult Problem(List<Error> errors)
     {

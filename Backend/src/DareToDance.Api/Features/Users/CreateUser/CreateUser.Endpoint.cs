@@ -11,7 +11,8 @@ public sealed record CreateUserRequest(
     string Password)
 {
     public override string ToString()
-        => $"CreateUserRequest {{ Email = {Email}, FirstName = {FirstName}, LastName = {LastName}, Password = [REDACTED] }}";
+        =>
+            $"CreateUserRequest {{ Email = {Email}, FirstName = {FirstName}, LastName = {LastName}, Password = [REDACTED] }}";
 }
 
 public sealed class CreateUserEndpoint : UsersEndpointBase
@@ -21,12 +22,9 @@ public sealed class CreateUserEndpoint : UsersEndpointBase
     public async Task<IActionResult> Handle(CreateUserRequest request, CancellationToken cancellationToken)
     {
         var result = await Sender.Send(request.ToCommand(), cancellationToken);
-
-        return result.Match(
-            user => CreatedAtRoute(
-                "GetUserById",
-                new { id = user.Id.Value },
-                user.ToResponse()),
+        
+        return result.Match<IActionResult>(
+            user => Created($"/users/{user.Id.Value}", user.ToResponse()),
             Problem);
     }
 }

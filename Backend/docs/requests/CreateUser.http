@@ -1,19 +1,19 @@
 @host = http://localhost:5015
 
 ### Create user — 201 Created + Location header
-POST {{host}}/api/users
+POST {{host}}/users
 Content-Type: application/json
 
 {
-  "email": "ana.petrovic@example.com",
-  "firstName": "Ana",
+  "email": "hello@nikolaandric.com",
+  "firstName": "Nikola",
   "lastName": "Petrovic",
   "password": "Sup3rSecret!"
 }
 
 
 ### Nevalidan zahtev — 400 ValidationProblem (los email, prazno ime, kratka lozinka)
-POST {{host}}/api/users
+POST {{host}}/users
 Content-Type: application/json
 
 {

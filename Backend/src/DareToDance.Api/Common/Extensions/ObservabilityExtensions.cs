@@ -33,7 +33,6 @@ public static class ObservabilityExtensions
                 }
                 else
                 {
-                    // compact JSON — spremno za App Service log stream
                     loggerConfiguration.WriteTo.Console(new CompactJsonFormatter());
                 }
             },

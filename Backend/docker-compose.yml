@@ -24,8 +24,10 @@ services:
       POSTGRES_DB: daretodance
     ports:
       - "5432:5432"
-    volumes:
-      - daretodance-pgdata:/var/lib/postgresql
+    # podaci zive samo u RAM-u (tmpfs) — svaki start kontejnera = svez, prazan postgres;
+    # migracije ih ponovo kreiraju kad se api podigne
+    tmpfs:
+      - /var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U daretodance -d daretodance"]
       interval: 5s
@@ -34,7 +36,6 @@ services:
       start_period: 10s
     restart: unless-stopped
 
-  # standalone Aspire dashboard — in-memory telemetrija, gasi se zajedno sa kontejnerom
   aspire-dashboard:
     image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
     container_name: daretodance-aspire-dashboard
@@ -44,6 +45,3 @@ services:
       - "18888:18888" # UI -> http://localhost:18888
       - "4317:18889"  # OTLP gRPC (host 4317 -> container 18889)
     restart: unless-stopped
-
-volumes:
-  daretodance-pgdata:
