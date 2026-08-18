@@ -5,7 +5,7 @@ using UserEntity = DareToDance.Domain.User.User;
 
 namespace DareToDance.Domain.Group;
 
-public sealed class Group : Entity<GroupId>
+public sealed class Group : AggregateRoot<GroupId>
 {
     //TODO: isto kao u UserPermissions
     public UserId TeacherId { get; private set; }
@@ -17,7 +17,6 @@ public sealed class Group : Entity<GroupId>
     public TimeOnly StartTime { get; private set; } // TODO: mozda ValueObject ili Entitet mozda da se cuva kao tabela
     public TimeOnly EndTime { get; private set; }   //
     public int MaxCapacity { get; private set; } // TODO: mozda da se capacity veze za Dance Hall tj prostor u kom se odrzava cas
-    public DateTime CreatedAtUtc { get; private set; } 
 
     private Group(
         GroupId id,
@@ -29,8 +28,9 @@ public sealed class Group : Entity<GroupId>
         TimeOnly startTime,
         TimeOnly endTime,
         int maxCapacity,
-        DateTime createdAtUtc)
-        : base(id)
+        DateTime createdAtUtc,
+        DateTime updatedAtUtc)
+        : base(id, createdAtUtc, updatedAtUtc)
     {
         TeacherId = teacherId;
         Name = name;
@@ -40,7 +40,6 @@ public sealed class Group : Entity<GroupId>
         StartTime = startTime;
         EndTime = endTime;
         MaxCapacity = maxCapacity;
-        CreatedAtUtc = createdAtUtc;
     }
 
     public static Group Create(
@@ -65,6 +64,7 @@ public sealed class Group : Entity<GroupId>
             startTime,
             endTime,
             maxCapacity,
+            utcNow,
             utcNow);
     }
 }

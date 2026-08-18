@@ -3,7 +3,7 @@ using DareToDance.Domain.PermissionEntity.Id;
 
 namespace DareToDance.Domain.PermissionEntity;
 
-public sealed class Permission : Entity<PermissionId> //TODO: 10 od 10 svidja mi se
+public sealed class Permission : AggregateRoot<PermissionId> 
 {
     public string Name { get; private set; }
     public string Description { get; private set; }
@@ -11,8 +11,10 @@ public sealed class Permission : Entity<PermissionId> //TODO: 10 od 10 svidja mi
     private Permission(
         PermissionId id,
         string name,
-        string description)
-        : base(id)
+        string description,
+        DateTime createdAtUtc,
+        DateTime updatedAtUtc)
+        : base(id, createdAtUtc, updatedAtUtc)
     {
         Name = name;
         Description = description;
@@ -20,9 +22,13 @@ public sealed class Permission : Entity<PermissionId> //TODO: 10 od 10 svidja mi
 
     public static Permission Create(string name, string description)
     {
+        var utcNow = DateTime.UtcNow;
+
         return new Permission(
             PermissionId.CreateUnique(),
             name.Trim(),
-            description.Trim());
+            description.Trim(),
+            utcNow,
+            utcNow);
     }
 }
