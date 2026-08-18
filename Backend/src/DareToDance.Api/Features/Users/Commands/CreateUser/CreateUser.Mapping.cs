@@ -1,4 +1,4 @@
-namespace DareToDance.Api.Features.Users.CreateUser;
+namespace DareToDance.Api.Features.Users.Commands.CreateUser;
 
 public static class CreateUserMapping
 {

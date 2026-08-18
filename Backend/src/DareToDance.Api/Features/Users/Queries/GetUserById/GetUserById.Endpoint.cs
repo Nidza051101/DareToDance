@@ -2,7 +2,7 @@ using DareToDance.Api.Features.Users.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DareToDance.Api.Features.Users.GetUserById;
+namespace DareToDance.Api.Features.Users.Queries.GetUserById;
 
 public sealed class GetUserByIdEndpoint : UsersEndpointBase
 {
