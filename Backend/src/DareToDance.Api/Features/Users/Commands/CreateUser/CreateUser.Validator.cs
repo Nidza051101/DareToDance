@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace DareToDance.Api.Features.Users.CreateUser;
+namespace DareToDance.Api.Features.Users.Commands.CreateUser;
 
 public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {

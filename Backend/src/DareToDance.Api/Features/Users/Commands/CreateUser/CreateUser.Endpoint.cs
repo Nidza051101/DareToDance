@@ -2,7 +2,7 @@ using DareToDance.Api.Features.Users.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DareToDance.Api.Features.Users.CreateUser;
+namespace DareToDance.Api.Features.Users.Commands.CreateUser;
 
 public sealed record CreateUserRequest(
     string Email,
