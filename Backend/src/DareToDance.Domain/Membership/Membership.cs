@@ -5,15 +5,14 @@ using UserEntity = DareToDance.Domain.User.User;
 
 namespace DareToDance.Domain.Membership;
 
-public sealed class Membership : Entity<MembershipId>
+public sealed class Membership : AggregateRoot<MembershipId>
 {
     public UserId UserId { get; private set; }
     public UserEntity User { get; private set; } = null!;
-    public string QrCode { get; private set; } //TODO: koliko dugo treba da bude validan par minuta ili na duzi period npr mesec dana
+    public string QrCode { get; private set; } //TODO: koliko dugo treba da bude validan par minuta ili na duzi period npr mesec dana. Aco: Traje jedan dan?
     public DateTime ValidFrom { get; private set; }
     public DateTime ValidTo { get; private set; }
     public string Status { get; private set; }
-    public DateTime CreatedAtUtc { get; private set; } //TODO: move it to Entity or AggregateRoot
 
     private Membership(
         MembershipId id,
@@ -22,15 +21,15 @@ public sealed class Membership : Entity<MembershipId>
         DateTime validFrom,
         DateTime validTo,
         string status,
-        DateTime createdAtUtc)
-        : base(id)
+        DateTime createdAtUtc,
+        DateTime updatedAtUtc)
+        : base(id, createdAtUtc, updatedAtUtc)
     {
         UserId = userId;
         QrCode = qrCode;
         ValidFrom = validFrom;
         ValidTo = validTo;
         Status = status;
-        CreatedAtUtc = createdAtUtc;
     }
 
     public static Membership Create(UserId userId, DateTime validFrom, DateTime validTo)
@@ -44,6 +43,7 @@ public sealed class Membership : Entity<MembershipId>
             validFrom,
             validTo,
             "active",
+            utcNow,
             utcNow);
     }
 }

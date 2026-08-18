@@ -3,15 +3,13 @@ using DareToDance.Domain.User.Id;
 
 namespace DareToDance.Domain.User;
 
-public sealed class User : Entity<UserId>
+public sealed class User : AggregateRoot<UserId>
 {
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
     public string Email { get; private set; }
     public string? Phone { get; private set; }
     public UserStatus Status { get; private set; }
-    public DateTime CreatedAtUtc { get; private set; }
-    public DateTime UpdatedAtUtc { get; private set; }
 
     private User(
         UserId id,
@@ -22,15 +20,13 @@ public sealed class User : Entity<UserId>
         UserStatus status,
         DateTime createdAtUtc,
         DateTime updatedAtUtc)
-        : base(id)
+        : base(id, createdAtUtc, updatedAtUtc)
     {
         FirstName = firstName;
         LastName = lastName;
         Email = email;
         Phone = phone;
         Status = status;
-        CreatedAtUtc = createdAtUtc;
-        UpdatedAtUtc = updatedAtUtc;
     }
 
     public static User Create(
