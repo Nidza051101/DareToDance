@@ -1,6 +1,7 @@
 using DareToDance.Domain.Common;
 using DareToDance.Domain.User.Id;
 using DareToDance.Domain.Group.Id;
+using UserEntity = DareToDance.Domain.User.User;
 
 namespace DareToDance.Domain.Group;
 
@@ -8,7 +9,7 @@ public sealed class Group : Entity<GroupId>
 {
     //TODO: isto kao u UserPermissions
     public UserId TeacherId { get; private set; }
-    public User Teacher { get; private set; } = null!;
+    public UserEntity Teacher { get; private set; } = null!;
     public string Name { get; private set; }
     public string DanceStyle { get; private set; } //TODO: mozda razmilsiti da bude entitet?
     public string Level { get; private set; } //TODO: enum

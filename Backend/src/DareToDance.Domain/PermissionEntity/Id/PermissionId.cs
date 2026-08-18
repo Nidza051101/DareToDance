@@ -1,6 +1,6 @@
 using DareToDance.Domain.Common;
 
-namespace DareToDance.Permission.User.Id;
+namespace DareToDance.Domain.PermissionEntity.Id;
 
 public sealed class PermissionId : ValueObject
 {

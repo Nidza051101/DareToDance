@@ -34,11 +34,13 @@ public sealed class CreateUserCommandHandler(
             return UserErrors.DuplicateEmail;
         }
 
+        // TODO: PasswordHash je uklonjen iz User modela (nije njegova odgovornost) —
+        // treba odluciti gde se cuva hash lozinke (npr. poseban Credentials entitet/tabela).
+        // passwordHasher.Hash(command.Password) trenutno se ne perzistuje nigde.
         var user = User.Create(
             email,
             command.FirstName,
-            command.LastName,
-            passwordHasher.Hash(command.Password));
+            command.LastName);
 
         dbContext.Users.Add(user);
 
