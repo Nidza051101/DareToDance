@@ -3,6 +3,7 @@ using System;
 using DareToDance.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DareToDance.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260818163500_AddPermissionsAndUserPermissions")]
+    partial class AddPermissionsAndUserPermissions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -148,19 +151,23 @@ namespace DareToDance.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("DareToDance.Domain.UserPermission.UserPermission", b =>
                 {
-                    b.HasOne("DareToDance.Domain.PermissionEntity.Permission", null)
+                    b.HasOne("DareToDance.Domain.PermissionEntity.Permission", "Permission")
                         .WithMany()
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_permissions_permissions_permission_id");
 
-                    b.HasOne("DareToDance.Domain.User.User", null)
+                    b.HasOne("DareToDance.Domain.User.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_permissions_users_user_id");
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
