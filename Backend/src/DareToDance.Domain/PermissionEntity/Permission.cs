@@ -1,5 +1,5 @@
 using DareToDance.Domain.Common;
-using DareToDance.Permission.User.Id;
+using DareToDance.Domain.PermissionEntity.Id;
 
 namespace DareToDance.Domain.PermissionEntity;
 
