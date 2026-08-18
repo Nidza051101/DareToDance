@@ -1,8 +1,6 @@
-# --- build stage ---
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# prvo samo csproj-evi da se restore keshira kao layer
 COPY ["src/DareToDance.Api/DareToDance.Api.csproj", "src/DareToDance.Api/"]
 COPY ["src/DareToDance.Infrastructure/DareToDance.Infrastructure.csproj", "src/DareToDance.Infrastructure/"]
 COPY ["src/DareToDance.Domain/DareToDance.Domain.csproj", "src/DareToDance.Domain/"]
@@ -11,12 +9,10 @@ RUN dotnet restore "src/DareToDance.Api/DareToDance.Api.csproj"
 COPY src/ src/
 RUN dotnet publish "src/DareToDance.Api/DareToDance.Api.csproj" -c Release --no-restore -o /app/publish /p:UseAppHost=false
 
-# --- runtime stage ---
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# image podrazumevano slusa na 8080; APP_UID = ne-root user iz base image-a
 USER $APP_UID
 EXPOSE 8080
 

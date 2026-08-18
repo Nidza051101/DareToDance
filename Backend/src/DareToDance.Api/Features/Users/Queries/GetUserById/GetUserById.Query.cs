@@ -6,7 +6,7 @@ using ErrorOr;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace DareToDance.Api.Features.Users.GetUserById;
+namespace DareToDance.Api.Features.Users.Queries.GetUserById;
 
 public sealed record GetUserByIdQuery(Guid Id) : IRequest<ErrorOr<User>>;
 

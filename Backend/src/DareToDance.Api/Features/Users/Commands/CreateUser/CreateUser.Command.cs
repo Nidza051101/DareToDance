@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
-namespace DareToDance.Api.Features.Users.CreateUser;
+namespace DareToDance.Api.Features.Users.Commands.CreateUser;
 
 public sealed record CreateUserCommand(
     string Email,
