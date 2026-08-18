@@ -7,7 +7,7 @@ namespace DareToDance.Domain.Membership;
 public sealed class Membership : AggregateRoot<MembershipId>
 {
     public UserId UserId { get; private set; }
-    public string QrCode { get; private set; } //TODO: koliko dugo treba da bude validan par minuta ili na duzi period npr mesec dana. Aco: Traje jedan dan?
+    public string QrCode { get; private set; } 
     public DateTime ValidFrom { get; private set; }
     public DateTime ValidTo { get; private set; }
     public string Status { get; private set; }
