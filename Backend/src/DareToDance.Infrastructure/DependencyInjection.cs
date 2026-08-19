@@ -24,7 +24,7 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
-        // TODO: zameniti pravim provajderima kada notifikacioni mikroservis bude dostupan.
+        // TODO: replace with real providers once the notification microservice is available.
         services.AddSingleton<IEmailSender, ConsoleEmailSender>();
         services.AddSingleton<ISmsSender, ConsoleSmsSender>();
 

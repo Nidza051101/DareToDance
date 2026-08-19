@@ -8,9 +8,9 @@ using Microsoft.Extensions.Options;
 
 namespace DareToDance.Api.Features.Auth.Shared;
 
-// Template Method: zajednicka logika (cooldown provera, generisanje koda, cuvanje
-// sa rokom trajanja - direktno na User, bez posebne tabele) je ovde. Nacin slanja
-// koda (email/sms) je promenljiv deo, prepusten konkretnim handlerima kroz SendCodeAsync.
+// Template Method: the shared logic (cooldown check, code generation, storing it
+// with an expiry - directly on User, no separate table) lives here. How the code
+// is sent (email/SMS) is the variable part, left to the concrete handlers via SendCodeAsync.
 public abstract class RequestLoginCodeHandlerBase(
     AppDbContext dbContext,
     IPasswordHasher passwordHasher,

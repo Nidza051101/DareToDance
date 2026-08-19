@@ -28,7 +28,7 @@ public sealed class RequestLoginCodeByPhoneCommandHandler(
 
         if (user is null)
         {
-            // Ne otkrivamo da li nalog postoji - sprecava enumeraciju naloga.
+            // Don't reveal whether the account exists - prevents account enumeration.
             return Result.Success;
         }
 

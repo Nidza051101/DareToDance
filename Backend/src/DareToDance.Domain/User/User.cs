@@ -12,7 +12,7 @@ public sealed class User : AggregateRoot<UserId>
     public UserStatus Status { get; private set; }
     public UserRole UserRole { get; private set; }
 
-    // OTP login kod - jedan aktivan kod po korisniku (bez posebne tabele/agregata, namerno drzano jednostavno)
+    // OTP login code - one active code per user (no separate table/aggregate, kept simple on purpose)
     public string? LoginCodeHash { get; private set; }
     public DateTime? LoginCodeExpiresAtUtc { get; private set; }
     public DateTime? LoginCodeCreatedAtUtc { get; private set; }

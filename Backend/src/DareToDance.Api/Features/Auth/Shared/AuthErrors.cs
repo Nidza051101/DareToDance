@@ -6,13 +6,13 @@ public static class AuthErrors
 {
     public static readonly Error InvalidCode = Error.Validation(
         code: "Auth.InvalidCode",
-        description: "Kod nije ispravan ili je istekao.");
+        description: "The code is invalid or has expired.");
 
     public static readonly Error TooManyAttempts = Error.Validation(
         code: "Auth.TooManyAttempts",
-        description: "Prekoracen je broj pokusaja. Zatrazite novi kod.");
+        description: "Too many failed attempts. Request a new code.");
 
     public static readonly Error CodeAlreadySent = Error.Conflict(
         code: "Auth.CodeAlreadySent",
-        description: "Kod je vec poslat, sacekajte pre nego sto zatrazite novi.");
+        description: "A code was already sent. Please wait before requesting a new one.");
 }

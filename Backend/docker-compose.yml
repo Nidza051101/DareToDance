@@ -8,7 +8,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Database: Host=postgres;Port=5432;Database=daretodance;Username=daretodance;Password=daretodance;Include Error Detail=true
       OTEL_EXPORTER_OTLP_ENDPOINT: http://aspire-dashboard:18889
-      # Samo za lokalni dev/testiranje preko docker-compose - u produkciji ide preko prave tajne (npr. secrets managera).
+      # Local dev/testing via docker-compose only - in production this should come from a real secret (e.g. a secrets manager).
       JwtSettings__Secret: dev-only-local-jwt-signing-secret-do-not-use-in-production-1234567890
     ports:
       - "5015:8080"

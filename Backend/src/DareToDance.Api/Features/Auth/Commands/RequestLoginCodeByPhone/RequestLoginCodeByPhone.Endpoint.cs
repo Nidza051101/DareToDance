@@ -15,7 +15,7 @@ public sealed class RequestLoginCodeByPhoneEndpoint : AuthEndpointBase
         var result = await Sender.Send(request.ToCommand(), cancellationToken);
 
         return result.Match<IActionResult>(
-            _ => Ok(new LoginCodeRequestedResponse("Ako nalog postoji, kod je poslat na uneti broj telefona.")),
+            _ => Ok(new LoginCodeRequestedResponse("If an account exists, a code has been sent to the given phone number.")),
             Problem);
     }
 }

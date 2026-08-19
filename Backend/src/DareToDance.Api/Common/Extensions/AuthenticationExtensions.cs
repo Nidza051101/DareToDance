@@ -12,7 +12,7 @@ public static class AuthenticationExtensions
         IConfiguration configuration)
     {
         var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()
-                           ?? throw new InvalidOperationException("JwtSettings sekcija nije konfigurisana.");
+                           ?? throw new InvalidOperationException("JwtSettings section is not configured.");
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

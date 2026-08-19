@@ -15,7 +15,7 @@ public sealed class RequestLoginCodeByEmailEndpoint : AuthEndpointBase
         var result = await Sender.Send(request.ToCommand(), cancellationToken);
 
         return result.Match<IActionResult>(
-            _ => Ok(new LoginCodeRequestedResponse("Ako nalog postoji, kod je poslat na uneti email.")),
+            _ => Ok(new LoginCodeRequestedResponse("If an account exists, a code has been sent to the given email.")),
             Problem);
     }
 }
