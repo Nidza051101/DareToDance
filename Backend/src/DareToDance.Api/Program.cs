@@ -14,6 +14,12 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddControllers();
     builder.Services.AddPresentation();
     builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddApiAuthentication(builder.Configuration);
+
+    if (builder.Environment.IsDevelopment())
+    {
+        builder.Services.AddApiDocumentation();
+    }
 }
 
 var app = builder.Build();
@@ -21,6 +27,7 @@ var app = builder.Build();
     if (app.Environment.IsDevelopment())
     {
         app.ApplyMigrations();
+        app.UseApiDocumentation();
     }
 
     app.UseExceptionHandler();

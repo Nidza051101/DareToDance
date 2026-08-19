@@ -19,7 +19,7 @@ public sealed class User : AggregateRoot<UserId>
         string email,
         string? phone,
         UserStatus status,
-        UserRole role,
+        UserRole userRole,
         DateTime createdAtUtc,
         DateTime updatedAtUtc)
         : base(id, createdAtUtc, updatedAtUtc)
@@ -29,7 +29,7 @@ public sealed class User : AggregateRoot<UserId>
         Email = email;
         Phone = phone;
         Status = status;
-        UserRole = role;
+        UserRole = userRole;
     }
 
     public static User Create(
