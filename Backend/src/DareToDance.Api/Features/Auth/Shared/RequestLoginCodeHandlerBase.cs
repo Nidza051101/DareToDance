@@ -1,18 +1,16 @@
 using System.Security.Cryptography;
-using DareToDance.Domain.LoginCode;
 using DareToDance.Domain.User;
 using DareToDance.Infrastructure.Options;
 using DareToDance.Infrastructure.Persistence;
 using DareToDance.Infrastructure.Services;
 using ErrorOr;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace DareToDance.Api.Features.Auth.Shared;
 
 // Template Method: zajednicka logika (cooldown provera, generisanje koda, cuvanje
-// sa rokom trajanja) je ovde. Nacin slanja koda (email/sms) je promenljiv deo,
-// prepusten konkretnim handlerima kroz SendCodeAsync.
+// sa rokom trajanja - direktno na User, bez posebne tabele) je ovde. Nacin slanja
+// koda (email/sms) je promenljiv deo, prepusten konkretnim handlerima kroz SendCodeAsync.
 public abstract class RequestLoginCodeHandlerBase(
     AppDbContext dbContext,
     IPasswordHasher passwordHasher,
@@ -20,30 +18,23 @@ public abstract class RequestLoginCodeHandlerBase(
 {
     protected async Task<ErrorOr<Success>> RequestCodeAsync(
         User user,
-        LoginChannel channel,
         string recipient,
         CancellationToken cancellationToken)
     {
         var otpSettings = otpOptions.Value;
         var utcNow = DateTime.UtcNow;
 
-        var lastCode = await dbContext.LoginCodes
-            .Where(lc => lc.UserId == user.Id && lc.ConsumedAtUtc == null)
-            .OrderByDescending(lc => lc.CreatedAtUtc)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (lastCode is not null &&
-            utcNow < lastCode.CreatedAtUtc.AddSeconds(otpSettings.ResendCooldownSeconds))
+        if (user.LoginCodeCreatedAtUtc is not null &&
+            utcNow < user.LoginCodeCreatedAtUtc.Value.AddSeconds(otpSettings.ResendCooldownSeconds))
         {
             return AuthErrors.CodeAlreadySent;
         }
 
         var code = GenerateCode(otpSettings.CodeLength);
         var codeHash = passwordHasher.Hash(code);
-        var expiresAtUtc = utcNow.AddMinutes(otpSettings.ExpiryMinutes);
+        var expiresAtUtc = utcNow.AddSeconds(otpSettings.ExpirySeconds);
 
-        var loginCode = LoginCode.Create(user.Id, channel, codeHash, expiresAtUtc);
-        dbContext.LoginCodes.Add(loginCode);
+        user.SetLoginCode(codeHash, expiresAtUtc, utcNow);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

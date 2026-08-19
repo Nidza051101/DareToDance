@@ -1,5 +1,4 @@
 using DareToDance.Api.Features.Auth.Shared;
-using DareToDance.Domain.LoginCode;
 using DareToDance.Infrastructure.Options;
 using DareToDance.Infrastructure.Persistence;
 using DareToDance.Infrastructure.Services;
@@ -33,7 +32,7 @@ public sealed class RequestLoginCodeByPhoneCommandHandler(
             return Result.Success;
         }
 
-        return await RequestCodeAsync(user, LoginChannel.Phone, phone, cancellationToken);
+        return await RequestCodeAsync(user, phone, cancellationToken);
     }
 
     protected override Task SendCodeAsync(string recipient, string code, CancellationToken cancellationToken)

@@ -22,57 +22,6 @@ namespace DareToDance.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("DareToDance.Domain.LoginCode.LoginCode", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Channel")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("channel");
-
-                    b.Property<string>("CodeHash")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("code_hash");
-
-                    b.Property<DateTime?>("ConsumedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("consumed_at_utc");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<DateTime>("ExpiresAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at_utc");
-
-                    b.Property<int>("FailedAttempts")
-                        .HasColumnType("integer")
-                        .HasColumnName("failed_attempts");
-
-                    b.Property<DateTime>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_login_codes");
-
-                    b.HasIndex("UserId", "ConsumedAtUtc")
-                        .HasDatabaseName("ix_login_codes_user_id_consumed_at_utc");
-
-                    b.ToTable("login_codes", (string)null);
-                });
-
             modelBuilder.Entity("DareToDance.Domain.PermissionEntity.Permission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -136,6 +85,23 @@ namespace DareToDance.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("last_name");
+
+                    b.Property<DateTime?>("LoginCodeCreatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("login_code_created_at_utc");
+
+                    b.Property<DateTime?>("LoginCodeExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("login_code_expires_at_utc");
+
+                    b.Property<int>("LoginCodeFailedAttempts")
+                        .HasColumnType("integer")
+                        .HasColumnName("login_code_failed_attempts");
+
+                    b.Property<string>("LoginCodeHash")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("login_code_hash");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(30)
@@ -201,16 +167,6 @@ namespace DareToDance.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_user_permissions_user_id_permission_id");
 
                     b.ToTable("user_permissions", (string)null);
-                });
-
-            modelBuilder.Entity("DareToDance.Domain.LoginCode.LoginCode", b =>
-                {
-                    b.HasOne("DareToDance.Domain.User.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_login_codes_users_user_id");
                 });
 
             modelBuilder.Entity("DareToDance.Domain.UserPermission.UserPermission", b =>

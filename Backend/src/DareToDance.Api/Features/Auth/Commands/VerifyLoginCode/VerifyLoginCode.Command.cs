@@ -26,37 +26,27 @@ public sealed class VerifyLoginCodeCommandHandler(
         var user = await dbContext.Users
             .FirstOrDefaultAsync(u => u.Email == normalizedEmail || u.Phone == recipient, cancellationToken);
 
-        if (user is null)
-        {
-            return AuthErrors.InvalidCode;
-        }
-
-        var loginCode = await dbContext.LoginCodes
-            .Where(lc => lc.UserId == user.Id && lc.ConsumedAtUtc == null)
-            .OrderByDescending(lc => lc.CreatedAtUtc)
-            .FirstOrDefaultAsync(cancellationToken);
-
         var utcNow = DateTime.UtcNow;
 
-        if (loginCode is null || loginCode.IsExpired(utcNow))
+        if (user is null || user.LoginCodeHash is null || !user.HasActiveLoginCode(utcNow))
         {
             return AuthErrors.InvalidCode;
         }
 
-        if (loginCode.FailedAttempts >= otpOptions.Value.MaxFailedAttempts)
+        if (user.LoginCodeFailedAttempts >= otpOptions.Value.MaxFailedAttempts)
         {
             return AuthErrors.TooManyAttempts;
         }
 
-        if (!passwordHasher.Verify(loginCode.CodeHash, command.Code))
+        if (!passwordHasher.Verify(user.LoginCodeHash, command.Code))
         {
-            loginCode.RegisterFailedAttempt(utcNow);
+            user.RegisterLoginCodeFailedAttempt(utcNow);
             await dbContext.SaveChangesAsync(cancellationToken);
 
             return AuthErrors.InvalidCode;
         }
 
-        loginCode.MarkConsumed(utcNow);
+        user.ClearLoginCode(utcNow);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var (accessToken, expiresAtUtc) = jwtTokenGenerator.GenerateToken(user);

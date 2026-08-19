@@ -107,7 +107,7 @@ Isti endpoint za oba kanala — prepoznaje da li je `recipient` email ili telefo
 |-----------------------------------------------------------------|--------------------------|-------------------------------------|
 | Pogrešan kod                                                     | `POST /auth/login/verify` | `400 Auth.InvalidCode`              |
 | Zahtev za novi kod dok prethodni još važi (< 60s, `ResendCooldownSeconds`) | `POST /auth/login/email` ili `/phone` | `409 Auth.CodeAlreadySent` |
-| Kod posle isteka (> 5 min, `OtpSettings.ExpiryMinutes`)          | `POST /auth/login/verify` | `400 Auth.InvalidCode`              |
+| Kod posle isteka (> 60s, `OtpSettings.ExpirySeconds`)            | `POST /auth/login/verify` | `400 Auth.InvalidCode`              |
 | Email/telefon koji ne postoji u bazi                             | `POST /auth/login/email` ili `/phone` | `200` (isti generički odgovor, ne otkriva se) |
 
 ---
