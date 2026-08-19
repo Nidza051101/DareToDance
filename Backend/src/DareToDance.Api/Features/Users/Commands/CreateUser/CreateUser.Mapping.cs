@@ -8,6 +8,7 @@ public static class CreateUserMapping
             request.Email,
             request.FirstName,
             request.LastName,
-            request.Password);
+            request.Password,
+            request.Phone);
     }
 }

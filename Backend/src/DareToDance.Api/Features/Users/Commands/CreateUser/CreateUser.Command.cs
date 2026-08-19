@@ -13,11 +13,12 @@ public sealed record CreateUserCommand(
     string Email,
     string FirstName,
     string LastName,
-    string Password) : IRequest<ErrorOr<User>>
+    string Password,
+    string? Phone = null) : IRequest<ErrorOr<User>>
 {
-    
+
     public override string ToString()
-        => $"CreateUserCommand {{ Email = {Email}, FirstName = {FirstName}, LastName = {LastName}, Password = [REDACTED] }}";
+        => $"CreateUserCommand {{ Email = {Email}, FirstName = {FirstName}, LastName = {LastName}, Phone = {Phone}, Password = [REDACTED] }}";
 }
 
 public sealed class CreateUserCommandHandler(
@@ -40,7 +41,8 @@ public sealed class CreateUserCommandHandler(
         var user = User.Create(
             email,
             command.FirstName,
-            command.LastName);
+            command.LastName,
+            command.Phone);
 
         dbContext.Users.Add(user);
 

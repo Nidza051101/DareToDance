@@ -23,5 +23,9 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
             .NotEmpty()
             .MinimumLength(8)
             .MaximumLength(128);
+
+        RuleFor(c => c.Phone)
+            .MaximumLength(30)
+            .When(c => !string.IsNullOrEmpty(c.Phone));
     }
 }

@@ -8,11 +8,12 @@ public sealed record CreateUserRequest(
     string Email,
     string FirstName,
     string LastName,
-    string Password)
+    string Password,
+    string? Phone = null)
 {
     public override string ToString()
         =>
-            $"CreateUserRequest {{ Email = {Email}, FirstName = {FirstName}, LastName = {LastName}, Password = [REDACTED] }}";
+            $"CreateUserRequest {{ Email = {Email}, FirstName = {FirstName}, LastName = {LastName}, Phone = {Phone}, Password = [REDACTED] }}";
 }
 
 public sealed class CreateUserEndpoint : UsersEndpointBase
