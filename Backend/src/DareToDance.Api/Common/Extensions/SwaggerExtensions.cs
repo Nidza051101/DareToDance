@@ -12,6 +12,25 @@ public static class SwaggerExtensions
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "DareToDance API", Version = "v1" });
 
+            // Group by the first route segment ("users", "auth", ...) instead of
+            // Swashbuckle's default (controller class name - would show up as
+            // "GetUserByIdEndpoint", "RequestLoginCodeByEmailEndpoint", ...).
+            options.TagActionsBy(api =>
+            {
+                var firstSegment = (api.RelativePath ?? string.Empty)
+                    .Split('/', StringSplitOptions.RemoveEmptyEntries)
+                    .FirstOrDefault();
+
+                if (string.IsNullOrEmpty(firstSegment))
+                {
+                    return [api.ActionDescriptor.RouteValues["controller"] ?? "Default"];
+                }
+
+                var tag = char.ToUpperInvariant(firstSegment[0]) + firstSegment[1..];
+
+                return [tag];
+            });
+
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
@@ -19,7 +38,7 @@ public static class SwaggerExtensions
                 Scheme = "Bearer",
                 BearerFormat = "JWT",
                 In = ParameterLocation.Header,
-                Description = "Unesi JWT dobijen preko /auth/login/verify (bez 'Bearer ' prefiksa, dodaje se automatski)."
+                Description = "Enter the JWT obtained from /auth/login/verify (no 'Bearer ' prefix, it's added automatically)."
             });
 
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
