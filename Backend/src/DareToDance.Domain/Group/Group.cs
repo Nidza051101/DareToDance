@@ -1,6 +1,7 @@
 using DareToDance.Domain.Common;
 using DareToDance.Domain.User.Id;
 using DareToDance.Domain.Group.Id;
+using DareToDance.Domain.DanceStyle.Id;
 
 namespace DareToDance.Domain.Group;
 
@@ -8,7 +9,7 @@ public sealed class Group : AggregateRoot<GroupId>
 {
     public UserId TeacherId { get; private set; }
     public string Name { get; private set; }
-    public string DanceStyle { get; private set; } //TODO: mozda razmilsiti da bude entitet?
+    public DanceStyleId DanceStyleId { get; private set; }
     public string Level { get; private set; } //TODO: enum
     public string DayOfWeek { get; private set; }   //
     public TimeOnly StartTime { get; private set; } // TODO: mozda ValueObject ili Entitet mozda da se cuva kao tabela
@@ -19,7 +20,7 @@ public sealed class Group : AggregateRoot<GroupId>
         GroupId id,
         UserId teacherId,
         string name,
-        string danceStyle,
+        DanceStyleId danceStyleId,
         string level,
         string dayOfWeek,
         TimeOnly startTime,
@@ -31,7 +32,7 @@ public sealed class Group : AggregateRoot<GroupId>
     {
         TeacherId = teacherId;
         Name = name;
-        DanceStyle = danceStyle;
+        DanceStyleId = danceStyleId;
         Level = level;
         DayOfWeek = dayOfWeek;
         StartTime = startTime;
@@ -42,7 +43,7 @@ public sealed class Group : AggregateRoot<GroupId>
     public static Group Create(
         UserId teacherId,
         string name,
-        string danceStyle,
+        DanceStyleId danceStyleId,
         string level,
         string dayOfWeek,
         TimeOnly startTime,
@@ -55,7 +56,7 @@ public sealed class Group : AggregateRoot<GroupId>
             GroupId.CreateUnique(),
             teacherId,
             name.Trim(),
-            danceStyle.Trim(),
+            danceStyleId,
             level.Trim(),
             dayOfWeek.Trim(),
             startTime,
