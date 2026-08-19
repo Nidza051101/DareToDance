@@ -34,7 +34,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\Users\Commands\" />
+      <Folder Include="Features\Users\Commands\RegisterUser\" />
       <Folder Include="Features\Users\Queries\" />
     </ItemGroup>
 

@@ -32,6 +32,8 @@ public sealed class User : AggregateRoot<UserId>
         UserRole = role;
     }
 
+    private User() { }
+
     public static User Create(
         string email,
         string firstName,

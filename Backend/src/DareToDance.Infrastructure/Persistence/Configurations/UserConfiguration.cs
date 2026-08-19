@@ -40,6 +40,11 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(20)
             .IsRequired();
 
+        builder.Property(u => u.UserRole)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .IsRequired();
+
         builder.Property(u => u.CreatedAtUtc)
             .IsRequired();
 
@@ -47,5 +52,18 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
 
         builder.Ignore(u => u.DomainEvents);
+
+        builder.HasData(new
+        {
+            Id = UserId.Create(new Guid("3f2504e0-4f89-11d3-9a0c-0305e82c3301")),
+            FirstName = "Nikola",
+            LastName = "Andric",
+            Email = "nikolaandricw@gmail.com",
+            Phone = "0641059679",
+            Status = UserStatus.Active,
+            UserRole = UserRole.Admin,
+            CreatedAtUtc = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            UpdatedAtUtc = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+        });
     }
 }
