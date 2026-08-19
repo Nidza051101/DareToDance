@@ -8,11 +8,11 @@ public static class AuthErrors
         code: "Auth.InvalidCode",
         description: "The code is invalid or has expired.");
 
-    public static readonly Error TooManyAttempts = Error.Validation(
-        code: "Auth.TooManyAttempts",
-        description: "Too many failed attempts. Request a new code.");
-
     public static readonly Error CodeAlreadySent = Error.Conflict(
         code: "Auth.CodeAlreadySent",
         description: "A code was already sent. Please wait before requesting a new one.");
+
+    public static readonly Error AccountBlocked = Error.Forbidden(
+        code: "Auth.AccountBlocked",
+        description: "The account has been blocked after too many failed attempts.");
 }

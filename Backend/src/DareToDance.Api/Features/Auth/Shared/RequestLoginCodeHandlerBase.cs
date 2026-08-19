@@ -24,6 +24,12 @@ public abstract class RequestLoginCodeHandlerBase(
         var otpSettings = otpOptions.Value;
         var utcNow = DateTime.UtcNow;
 
+        if (!user.IsActive)
+        {
+            // Same generic success as "user not found" - don't reveal account state.
+            return Result.Success;
+        }
+
         if (user.LoginCodeCreatedAtUtc is not null &&
             utcNow < user.LoginCodeCreatedAtUtc.Value.AddSeconds(otpSettings.ResendCooldownSeconds))
         {

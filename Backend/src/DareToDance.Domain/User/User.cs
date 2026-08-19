@@ -73,6 +73,20 @@ public sealed class User : AggregateRoot<UserId>
         return trimmed.StartsWith('+') ? $"+{digits}" : digits;
     }
 
+    public bool IsActive => Status == UserStatus.Active;
+
+    public void Block(DateTime utcNow)
+    {
+        Status = UserStatus.Blocked;
+        MarkAsUpdated(utcNow);
+    }
+
+    public void Activate(DateTime utcNow)
+    {
+        Status = UserStatus.Active;
+        MarkAsUpdated(utcNow);
+    }
+
     public bool HasActiveLoginCode(DateTime utcNow)
         => LoginCodeExpiresAtUtc is not null && utcNow < LoginCodeExpiresAtUtc;
 
@@ -94,9 +108,17 @@ public sealed class User : AggregateRoot<UserId>
         MarkAsUpdated(utcNow);
     }
 
-    public void RegisterLoginCodeFailedAttempt(DateTime utcNow)
+    // Auto-blocks the account once failed attempts reach the configured limit -
+    // same UserStatus.Blocked an admin would set manually via Block().
+    public void RegisterLoginCodeFailedAttempt(int maxFailedAttempts, DateTime utcNow)
     {
         LoginCodeFailedAttempts++;
+
+        if (LoginCodeFailedAttempts >= maxFailedAttempts)
+        {
+            Status = UserStatus.Blocked;
+        }
+
         MarkAsUpdated(utcNow);
     }
 }

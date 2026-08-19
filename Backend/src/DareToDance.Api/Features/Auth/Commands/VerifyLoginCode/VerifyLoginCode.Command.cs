@@ -30,22 +30,19 @@ public sealed class VerifyLoginCodeCommandHandler(
 
         var utcNow = DateTime.UtcNow;
 
-        if (user is null || user.LoginCodeHash is null || !user.HasActiveLoginCode(utcNow))
+        if (user is null || !user.IsActive || user.LoginCodeHash is null || !user.HasActiveLoginCode(utcNow))
         {
             return AuthErrors.InvalidCode;
-        }
-
-        if (user.LoginCodeFailedAttempts >= otpOptions.Value.MaxFailedAttempts)
-        {
-            return AuthErrors.TooManyAttempts;
         }
 
         if (!passwordHasher.Verify(user.LoginCodeHash, command.Code))
         {
-            user.RegisterLoginCodeFailedAttempt(utcNow);
+            user.RegisterLoginCodeFailedAttempt(otpOptions.Value.MaxFailedAttempts, utcNow);
             await dbContext.SaveChangesAsync(cancellationToken);
 
-            return AuthErrors.InvalidCode;
+            return user.Status == UserStatus.Blocked
+                ? AuthErrors.AccountBlocked
+                : AuthErrors.InvalidCode;
         }
 
         user.ClearLoginCode(utcNow);
