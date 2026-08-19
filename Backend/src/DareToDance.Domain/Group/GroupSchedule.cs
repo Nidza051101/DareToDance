@@ -19,12 +19,12 @@ public sealed class GroupSchedule : ValueObject
     {
         if (string.IsNullOrWhiteSpace(dayOfWeek))
         {
-            throw new ArgumentException("Dan u nedelji je obavezan.", nameof(dayOfWeek));
+            throw new ArgumentException("The day of the week is necessary.", nameof(dayOfWeek));
         }
 
         if (endTime <= startTime)
         {
-            throw new ArgumentException("Vreme završetka mora biti posle vremena početka.", nameof(endTime));
+            throw new ArgumentException("The end time must be after the start time.", nameof(endTime));
         }
 
         return new GroupSchedule(dayOfWeek.Trim(), startTime, endTime);
