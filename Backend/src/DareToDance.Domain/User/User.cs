@@ -3,43 +3,51 @@ using DareToDance.Domain.User.Id;
 
 namespace DareToDance.Domain.User;
 
-public sealed class User : Entity<UserId>
+public sealed class User : AggregateRoot<UserId>
 {
-    public string Email { get; private set; }
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
-    public string PasswordHash { get; private set; }
-    public DateTime CreatedAtUtc { get; private set; }
-    public DateTime UpdatedAtUtc { get; private set; }
+    public string Email { get; private set; }
+    public string? Phone { get; private set; }
+    public UserStatus Status { get; private set; }
+    public UserRole UserRole { get; private set; }
 
     private User(
         UserId id,
+        string firstName,
+        string lastName,
+        string email,
+        string? phone,
+        UserStatus status,
+        UserRole role,
+        DateTime createdAtUtc,
+        DateTime updatedAtUtc)
+        : base(id, createdAtUtc, updatedAtUtc)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        Phone = phone;
+        Status = status;
+        UserRole = role;
+    }
+
+    public static User Create(
         string email,
         string firstName,
         string lastName,
-        string passwordHash,
-        DateTime createdAtUtc,
-        DateTime updatedAtUtc)
-        : base(id)
-    {
-        Email = email;
-        FirstName = firstName;
-        LastName = lastName;
-        PasswordHash = passwordHash;
-        CreatedAtUtc = createdAtUtc;
-        UpdatedAtUtc = updatedAtUtc;
-    }
-
-    public static User Create(string email, string firstName, string lastName, string passwordHash)
+        string? phone = null)
     {
         var utcNow = DateTime.UtcNow;
 
         return new User(
             UserId.CreateUnique(),
-            email.Trim().ToLowerInvariant(),
             firstName.Trim(),
             lastName.Trim(),
-            passwordHash,
+            email.Trim().ToLowerInvariant(),
+            phone?.Trim(),
+            UserStatus.Active,
+            UserRole.Member,
             utcNow,
             utcNow);
     }
