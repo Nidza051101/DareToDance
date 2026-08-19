@@ -1,4 +1,5 @@
 using DareToDance.Api.Features.Auth.Shared;
+using DareToDance.Domain.User;
 using DareToDance.Infrastructure.Options;
 using DareToDance.Infrastructure.Persistence;
 using DareToDance.Infrastructure.Services;
@@ -21,7 +22,7 @@ public sealed class RequestLoginCodeByPhoneCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(RequestLoginCodeByPhoneCommand command, CancellationToken cancellationToken)
     {
-        var phone = command.Phone.Trim();
+        var phone = User.NormalizePhone(command.Phone)!;
 
         var user = await dbContext.Users
             .FirstOrDefaultAsync(u => u.Phone == phone, cancellationToken);

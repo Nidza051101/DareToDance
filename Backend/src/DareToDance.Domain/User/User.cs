@@ -51,11 +51,26 @@ public sealed class User : AggregateRoot<UserId>
             firstName.Trim(),
             lastName.Trim(),
             email.Trim().ToLowerInvariant(),
-            phone?.Trim(),
+            NormalizePhone(phone),
             UserStatus.Active,
             UserRole.Member,
             utcNow,
             utcNow);
+    }
+
+    // Strips everything except digits and a leading '+', so formatting differences
+    // ("+381 60 111 2233" vs "+381601112233") don't cause lookup mismatches.
+    public static string? NormalizePhone(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            return null;
+        }
+
+        var trimmed = phone.Trim();
+        var digits = new string(trimmed.Where(char.IsDigit).ToArray());
+
+        return trimmed.StartsWith('+') ? $"+{digits}" : digits;
     }
 
     public bool HasActiveLoginCode(DateTime utcNow)

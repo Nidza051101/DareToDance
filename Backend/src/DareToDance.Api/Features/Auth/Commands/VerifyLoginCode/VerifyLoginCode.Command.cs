@@ -1,4 +1,5 @@
 using DareToDance.Api.Features.Auth.Shared;
+using DareToDance.Domain.User;
 using DareToDance.Infrastructure.Options;
 using DareToDance.Infrastructure.Persistence;
 using DareToDance.Infrastructure.Services;
@@ -22,9 +23,10 @@ public sealed class VerifyLoginCodeCommandHandler(
     {
         var recipient = command.Recipient.Trim();
         var normalizedEmail = recipient.ToLowerInvariant();
+        var normalizedPhone = User.NormalizePhone(recipient);
 
         var user = await dbContext.Users
-            .FirstOrDefaultAsync(u => u.Email == normalizedEmail || u.Phone == recipient, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Email == normalizedEmail || u.Phone == normalizedPhone, cancellationToken);
 
         var utcNow = DateTime.UtcNow;
 
