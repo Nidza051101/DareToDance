@@ -11,8 +11,7 @@ public sealed record RegisterUserRequest(
     string? Phone)
 {
     public override string ToString()
-        =>
-            $"RegisterUserRequest {{ FirstName = {FirstName}, LastName = {LastName}, Email = {Email}, Phone = {Phone} }}";
+        => $"RegisterUserRequest {{ FirstName = {FirstName}, LastName = {LastName}, Email = {Email}, Phone = {Phone} }}";
 }
 
 public sealed class RegisterUserEndpoint : UsersEndpointBase
@@ -28,7 +27,6 @@ public sealed class RegisterUserEndpoint : UsersEndpointBase
             return BadRequest();
         }
 
-        // Ensure Phone is not null when creating the command so the handler's Trim() calls won't throw.
         var command = new RegisterUserCommand(
             request.FirstName,
             request.LastName,
