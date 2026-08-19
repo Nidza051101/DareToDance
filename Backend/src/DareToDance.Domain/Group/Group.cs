@@ -10,10 +10,8 @@ public sealed class Group : AggregateRoot<GroupId>
     public UserId TeacherId { get; private set; }
     public string Name { get; private set; }
     public DanceStyleId DanceStyleId { get; private set; }
-    public string Level { get; private set; } //TODO: enum
-    public string DayOfWeek { get; private set; }   //
-    public TimeOnly StartTime { get; private set; } // TODO: mozda ValueObject ili Entitet mozda da se cuva kao tabela
-    public TimeOnly EndTime { get; private set; }   //
+    public GroupLevel Level { get; private set; }
+    public GroupSchedule Schedule { get; private set; }
     public int MaxCapacity { get; private set; } // TODO: mozda da se capacity veze za Dance Hall tj prostor u kom se odrzava cas
 
     private Group(
@@ -21,10 +19,8 @@ public sealed class Group : AggregateRoot<GroupId>
         UserId teacherId,
         string name,
         DanceStyleId danceStyleId,
-        string level,
-        string dayOfWeek,
-        TimeOnly startTime,
-        TimeOnly endTime,
+        GroupLevel level,
+        GroupSchedule schedule,
         int maxCapacity,
         DateTime createdAtUtc,
         DateTime updatedAtUtc)
@@ -34,9 +30,7 @@ public sealed class Group : AggregateRoot<GroupId>
         Name = name;
         DanceStyleId = danceStyleId;
         Level = level;
-        DayOfWeek = dayOfWeek;
-        StartTime = startTime;
-        EndTime = endTime;
+        Schedule = schedule;
         MaxCapacity = maxCapacity;
     }
 
@@ -44,10 +38,8 @@ public sealed class Group : AggregateRoot<GroupId>
         UserId teacherId,
         string name,
         DanceStyleId danceStyleId,
-        string level,
-        string dayOfWeek,
-        TimeOnly startTime,
-        TimeOnly endTime,
+        GroupLevel level,
+        GroupSchedule schedule,
         int maxCapacity)
     {
         var utcNow = DateTime.UtcNow;
@@ -57,10 +49,8 @@ public sealed class Group : AggregateRoot<GroupId>
             teacherId,
             name.Trim(),
             danceStyleId,
-            level.Trim(),
-            dayOfWeek.Trim(),
-            startTime,
-            endTime,
+            level,
+            schedule,
             maxCapacity,
             utcNow,
             utcNow);
