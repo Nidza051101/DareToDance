@@ -12,7 +12,7 @@ public sealed class Group : AggregateRoot<GroupId>
     public DanceStyleId DanceStyleId { get; private set; }
     public GroupLevel Level { get; private set; }
     public GroupSchedule Schedule { get; private set; }
-    public int MaxCapacity { get; private set; } // TODO: mozda da se capacity veze za Dance Hall tj prostor u kom se odrzava cas
+    public int MaxCapacity { get; private set; } // TODO za kasnije: mozda da se capacity veze za Dance Hall tj prostor u kom se odrzava cas
 
     private Group(
         GroupId id,
