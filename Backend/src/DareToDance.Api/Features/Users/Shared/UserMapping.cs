@@ -11,6 +11,7 @@ public static class UserMapping
             user.Email,
             user.FirstName,
             user.LastName,
+            user.Phone,
             user.CreatedAtUtc);
     }
 }

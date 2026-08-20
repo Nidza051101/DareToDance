@@ -38,6 +38,7 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Phone)
             .HasMaxLength(30);
 
+
         builder.HasIndex(u => u.Phone)
             .IsUnique()
             .HasDatabaseName("ix_users_phone");
@@ -50,6 +51,18 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.UserRole)
             .HasConversion<string>()
             .HasMaxLength(20)
+
+            .IsRequired();
+
+        builder.Property(u => u.LoginCodeHash)
+            .HasMaxLength(500);
+
+        builder.Property(u => u.LoginCodeExpiresAtUtc);
+
+        builder.Property(u => u.LoginCodeCreatedAtUtc);
+
+        builder.Property(u => u.LoginCodeFailedAttempts)
+
             .IsRequired();
 
         builder.Property(u => u.CreatedAtUtc)

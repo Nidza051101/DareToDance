@@ -1,3 +1,4 @@
+using DareToDance.Infrastructure.Options;
 using DareToDance.Infrastructure.Persistence;
 using DareToDance.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,15 @@ public static class DependencyInjection
                 .UseNpgsql(configuration.GetConnectionString("Database"))
                 .UseSnakeCaseNamingConvention());
 
+        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
+        services.Configure<OtpSettings>(configuration.GetSection(OtpSettings.SectionName));
+
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+
+        // TODO: replace with real providers once the notification microservice is available.
+        services.AddSingleton<IEmailSender, ConsoleEmailSender>();
+        services.AddSingleton<ISmsSender, ConsoleSmsSender>();
 
         return services;
     }
