@@ -3,6 +3,7 @@ using System;
 using DareToDance.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DareToDance.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260819203303_SnakeCaseNaming")]
+    partial class SnakeCaseNaming
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,25 +89,6 @@ namespace DareToDance.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("last_name");
 
-
-                    b.Property<DateTime?>("LoginCodeCreatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("login_code_created_at_utc");
-
-                    b.Property<DateTime?>("LoginCodeExpiresAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("login_code_expires_at_utc");
-
-                    b.Property<int>("LoginCodeFailedAttempts")
-                        .HasColumnType("integer")
-                        .HasColumnName("login_code_failed_attempts");
-
-                    b.Property<string>("LoginCodeHash")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("login_code_hash");
-
-
                     b.Property<string>("Phone")
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)")
@@ -152,58 +136,6 @@ namespace DareToDance.Infrastructure.Persistence.Migrations
                             UpdatedAtUtc = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             UserRole = "Admin"
                         });
-                });
-
-            modelBuilder.Entity("DareToDance.Domain.UserPermission.UserPermission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("permission_id");
-
-                    b.Property<DateTime>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_user_permissions");
-
-                    b.HasIndex("PermissionId")
-                        .HasDatabaseName("ix_user_permissions_permission_id");
-
-                    b.HasIndex("UserId", "PermissionId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_user_permissions_user_id_permission_id");
-
-                    b.ToTable("user_permissions", (string)null);
-                });
-
-            modelBuilder.Entity("DareToDance.Domain.UserPermission.UserPermission", b =>
-                {
-                    b.HasOne("DareToDance.Domain.PermissionEntity.Permission", null)
-                        .WithMany()
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_permissions_permissions_permission_id");
-
-                    b.HasOne("DareToDance.Domain.User.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_permissions_users_user_id");
                 });
 
             modelBuilder.Entity("DareToDance.Domain.UserPermission.UserPermission", b =>

@@ -36,6 +36,7 @@ public static partial class CreateUser
                 return UserErrors.DuplicateEmail;
             }
 
+
             // TODO: PasswordHash je uklonjen iz User modela (nije njegova odgovornost) —
             // treba odluciti gde se cuva hash lozinke (npr. poseban Credentials entitet/tabela).
             // passwordHasher.Hash(command.Password) trenutno se ne perzistuje nigde.

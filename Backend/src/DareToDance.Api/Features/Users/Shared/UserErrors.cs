@@ -8,6 +8,10 @@ public static class UserErrors
         code: "User.DuplicateEmail",
         description: "A user with this email already exists.");
 
+    public static readonly Error DuplicatePhone = Error.Conflict(
+        code: "User.DuplicatePhone",
+        description: "A user with this phone already exists.");
+    
     public static readonly Error NotFound = Error.NotFound(
         code: "User.NotFound",
         description: "User with the specified id was not found.");

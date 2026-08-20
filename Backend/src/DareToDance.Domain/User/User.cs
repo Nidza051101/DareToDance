@@ -12,6 +12,7 @@ public sealed class User : AggregateRoot<UserId>
     public UserStatus Status { get; private set; }
     public UserRole UserRole { get; private set; }
 
+
     // OTP login code - one active code per user (no separate table/aggregate, kept simple on purpose)
     public string? LoginCodeHash { get; private set; }
     public DateTime? LoginCodeExpiresAtUtc { get; private set; }
@@ -25,7 +26,11 @@ public sealed class User : AggregateRoot<UserId>
         string email,
         string? phone,
         UserStatus status,
+
+        UserRole role,
+
         UserRole userRole,
+
         DateTime createdAtUtc,
         DateTime updatedAtUtc)
         : base(id, createdAtUtc, updatedAtUtc)
@@ -35,8 +40,15 @@ public sealed class User : AggregateRoot<UserId>
         Email = email;
         Phone = phone;
         Status = status;
+
+        UserRole = role;
+    }
+
+    private User() { }
+
         UserRole = userRole;
     }
+
 
     public static User Create(
         string email,
@@ -51,12 +63,17 @@ public sealed class User : AggregateRoot<UserId>
             firstName.Trim(),
             lastName.Trim(),
             email.Trim().ToLowerInvariant(),
+
+            phone?.Trim(),
+
             NormalizePhone(phone),
+
             UserStatus.Active,
             UserRole.Member,
             utcNow,
             utcNow);
     }
+
 
     // Strips everything except digits and a leading '+', so formatting differences
     // ("+381 60 111 2233" vs "+381601112233") don't cause lookup mismatches.

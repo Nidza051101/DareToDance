@@ -8,6 +8,8 @@ public abstract class Entity<TId>(TId id) : IEquatable<Entity<TId>>, IHasDomainE
 
     public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
+    protected Entity() : this(default!) { }
+
     public void ClearDomainEvents()
     {
         _domainEvents.Clear();
