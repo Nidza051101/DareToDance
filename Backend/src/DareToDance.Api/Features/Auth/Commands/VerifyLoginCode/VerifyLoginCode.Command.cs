@@ -25,14 +25,7 @@ public static partial class VerifyLoginCode
     {
         public async Task<ErrorOr<Result>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var recipient = command.Recipient.Trim();
-            var normalizedEmail = recipient.ToLowerInvariant();
-            var normalizedPhone = User.NormalizePhone(recipient);
-            //TODO : ovo ide na drugo mesto, a ne ovde
-
-            // Recipient moze biti email ili telefon - trazimo korisnika po bilo kom od njih.
-            var user = await dbContext.Users
-                .FirstOrDefaultAsync(u => u.Email == normalizedEmail || u.Phone == normalizedPhone, cancellationToken);
+            var user = await FindUserAsync(command.Recipient, cancellationToken);
 
             var utcNow = DateTime.UtcNow;
 
@@ -57,6 +50,17 @@ public static partial class VerifyLoginCode
             var (accessToken, expiresAtUtc) = jwtTokenGenerator.GenerateToken(user);
 
             return new Result(user, accessToken, expiresAtUtc);
+        }
+
+        // Recipient moze biti email ili telefon - trazimo korisnika po bilo kom od njih.
+        private Task<User?> FindUserAsync(string recipient, CancellationToken cancellationToken)
+        {
+            var trimmed = recipient.Trim();
+            var normalizedEmail = trimmed.ToLowerInvariant();
+            var normalizedPhone = User.NormalizePhone(trimmed);
+
+            return dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email == normalizedEmail || u.Phone == normalizedPhone, cancellationToken);
         }
     }
 }
