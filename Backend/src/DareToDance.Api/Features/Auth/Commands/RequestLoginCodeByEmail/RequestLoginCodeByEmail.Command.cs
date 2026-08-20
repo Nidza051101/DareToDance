@@ -9,32 +9,39 @@ using Microsoft.Extensions.Options;
 
 namespace DareToDance.Api.Features.Auth.Commands.RequestLoginCodeByEmail;
 
-public sealed record RequestLoginCodeByEmailCommand(string Email) : IRequest<ErrorOr<Success>>;
-
-public sealed class RequestLoginCodeByEmailCommandHandler(
-    AppDbContext dbContext,
-    IPasswordHasher passwordHasher,
-    IOptions<OtpSettings> otpOptions,
-    IEmailSender emailSender)
-    : RequestLoginCodeHandlerBase(dbContext, passwordHasher, otpOptions),
-        IRequestHandler<RequestLoginCodeByEmailCommand, ErrorOr<Success>>
+public static partial class RequestLoginCodeByEmail
 {
-    public async Task<ErrorOr<Success>> Handle(RequestLoginCodeByEmailCommand command, CancellationToken cancellationToken)
+    public sealed record Command(string Email) : IRequest<ErrorOr<Success>>;
+
+    public sealed class Handler(
+        AppDbContext dbContext,
+        IPasswordHasher passwordHasher,
+        IOptions<OtpSettings> otpOptions,
+        IEmailSender emailSender)
+        : IRequestHandler<Command, ErrorOr<Success>>
     {
-        var email = command.Email.Trim().ToLowerInvariant();
-
-        var user = await dbContext.Users
-            .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
-
-        if (user is null)
+        public async Task<ErrorOr<Success>> Handle(Command command, CancellationToken cancellationToken)
         {
-            // Don't reveal whether the account exists - prevents account enumeration.
-            return Result.Success;
+            var email = command.Email.Trim().ToLowerInvariant();
+
+            var user = await dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+
+            if (user is null)
+            {
+                // Ne otkrivamo da li nalog postoji - sprecava account enumeration
+                // (neko bi mogao da proba veliki broj mejlova i po odgovoru zakljuci koji su registrovani).
+                return Result.Success;
+            }
+
+            return await RequestLoginCodeHelper.RequestCodeAsync(
+                dbContext,
+                passwordHasher,
+                otpOptions.Value,
+                user,
+                email,
+                emailSender.SendLoginCodeAsync,
+                cancellationToken);
         }
-
-        return await RequestCodeAsync(user, email, cancellationToken);
     }
-
-    protected override Task SendCodeAsync(string recipient, string code, CancellationToken cancellationToken)
-        => emailSender.SendLoginCodeAsync(recipient, code, cancellationToken);
 }

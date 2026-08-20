@@ -1,9 +1,9 @@
 namespace DareToDance.Api.Features.Auth.Commands.RequestLoginCodeByPhone;
 
-public static class RequestLoginCodeByPhoneMapping
+public static partial class RequestLoginCodeByPhone
 {
-    public static RequestLoginCodeByPhoneCommand ToCommand(this RequestLoginCodeByPhoneRequest request)
+    public static Command ToCommand(this RequestLoginCodeByPhoneRequest request)
     {
-        return new RequestLoginCodeByPhoneCommand(request.Phone);
+        return new Command(request.Phone);
     }
 }

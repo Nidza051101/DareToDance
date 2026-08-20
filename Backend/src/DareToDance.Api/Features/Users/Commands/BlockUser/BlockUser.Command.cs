@@ -8,26 +8,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DareToDance.Api.Features.Users.Commands.BlockUser;
 
-public sealed record BlockUserCommand(Guid Id) : IRequest<ErrorOr<User>>;
-
-public sealed class BlockUserCommandHandler(AppDbContext dbContext)
-    : IRequestHandler<BlockUserCommand, ErrorOr<User>>
+public static partial class BlockUser
 {
-    public async Task<ErrorOr<User>> Handle(BlockUserCommand command, CancellationToken cancellationToken)
+    public sealed record Command(Guid Id) : IRequest<ErrorOr<User>>;
+
+    public sealed class Handler(AppDbContext dbContext)
+        : IRequestHandler<Command, ErrorOr<User>>
     {
-        var userId = UserId.Create(command.Id);
-
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
-
-        if (user is null)
+        public async Task<ErrorOr<User>> Handle(Command command, CancellationToken cancellationToken)
         {
-            return UserErrors.NotFound;
+            var userId = UserId.Create(command.Id);
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+            if (user is null)
+            {
+                return UserErrors.NotFound;
+            }
+
+            user.Block(DateTime.UtcNow);
+
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            return user;
         }
-
-        user.Block(DateTime.UtcNow);
-
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        return user;
     }
 }

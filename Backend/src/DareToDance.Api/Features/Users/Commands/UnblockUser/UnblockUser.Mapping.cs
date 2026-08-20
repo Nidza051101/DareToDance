@@ -1,9 +1,9 @@
 namespace DareToDance.Api.Features.Users.Commands.UnblockUser;
 
-public static class UnblockUserMapping
+public static partial class UnblockUser
 {
-    public static UnblockUserCommand ToCommand(this Guid id)
+    public static Command ToCommand(this Guid id)
     {
-        return new UnblockUserCommand(id);
+        return new Command(id);
     }
 }

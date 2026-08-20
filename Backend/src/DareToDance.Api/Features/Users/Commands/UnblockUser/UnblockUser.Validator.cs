@@ -2,11 +2,14 @@ using FluentValidation;
 
 namespace DareToDance.Api.Features.Users.Commands.UnblockUser;
 
-public sealed class UnblockUserCommandValidator : AbstractValidator<UnblockUserCommand>
+public static partial class UnblockUser
 {
-    public UnblockUserCommandValidator()
+    public sealed class Validator : AbstractValidator<Command>
     {
-        RuleFor(c => c.Id)
-            .NotEmpty();
+        public Validator()
+        {
+            RuleFor(c => c.Id)
+                .NotEmpty();
+        }
     }
 }

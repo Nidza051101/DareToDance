@@ -2,16 +2,19 @@ using FluentValidation;
 
 namespace DareToDance.Api.Features.Auth.Commands.VerifyLoginCode;
 
-public sealed class VerifyLoginCodeCommandValidator : AbstractValidator<VerifyLoginCodeCommand>
+public static partial class VerifyLoginCode
 {
-    public VerifyLoginCodeCommandValidator()
+    public sealed class Validator : AbstractValidator<Command>
     {
-        RuleFor(c => c.Recipient)
-            .NotEmpty()
-            .MaximumLength(320);
+        public Validator()
+        {
+            RuleFor(c => c.Recipient)
+                .NotEmpty()
+                .MaximumLength(320);
 
-        RuleFor(c => c.Code)
-            .NotEmpty()
-            .Length(6);
+            RuleFor(c => c.Code)
+                .NotEmpty()
+                .Length(6);
+        }
     }
 }

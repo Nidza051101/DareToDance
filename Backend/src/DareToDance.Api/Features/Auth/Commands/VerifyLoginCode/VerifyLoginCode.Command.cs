@@ -10,46 +10,53 @@ using Microsoft.Extensions.Options;
 
 namespace DareToDance.Api.Features.Auth.Commands.VerifyLoginCode;
 
-public sealed record VerifyLoginCodeCommand(string Recipient, string Code) : IRequest<ErrorOr<LoginResult>>;
-
-public sealed class VerifyLoginCodeCommandHandler(
-    AppDbContext dbContext,
-    IPasswordHasher passwordHasher,
-    IOptions<OtpSettings> otpOptions,
-    IJwtTokenGenerator jwtTokenGenerator)
-    : IRequestHandler<VerifyLoginCodeCommand, ErrorOr<LoginResult>>
+public static partial class VerifyLoginCode
 {
-    public async Task<ErrorOr<LoginResult>> Handle(VerifyLoginCodeCommand command, CancellationToken cancellationToken)
+    public sealed record Command(string Recipient, string Code) : IRequest<ErrorOr<Result>>;
+
+    public sealed record Result(User User, string AccessToken, DateTime ExpiresAtUtc);
+
+    public sealed class Handler(
+        AppDbContext dbContext,
+        IPasswordHasher passwordHasher,
+        IOptions<OtpSettings> otpOptions,
+        IJwtTokenGenerator jwtTokenGenerator)
+        : IRequestHandler<Command, ErrorOr<Result>>
     {
-        var recipient = command.Recipient.Trim();
-        var normalizedEmail = recipient.ToLowerInvariant();
-        var normalizedPhone = User.NormalizePhone(recipient);
-
-        var user = await dbContext.Users
-            .FirstOrDefaultAsync(u => u.Email == normalizedEmail || u.Phone == normalizedPhone, cancellationToken);
-
-        var utcNow = DateTime.UtcNow;
-
-        if (user is null || !user.IsActive || user.LoginCodeHash is null || !user.HasActiveLoginCode(utcNow))
+        public async Task<ErrorOr<Result>> Handle(Command command, CancellationToken cancellationToken)
         {
-            return AuthErrors.InvalidCode;
-        }
+            var recipient = command.Recipient.Trim();
+            var normalizedEmail = recipient.ToLowerInvariant();
+            var normalizedPhone = User.NormalizePhone(recipient);
+            //TODO : ovo ide na drugo mesto, a ne ovde
 
-        if (!passwordHasher.Verify(user.LoginCodeHash, command.Code))
-        {
-            user.RegisterLoginCodeFailedAttempt(otpOptions.Value.MaxFailedAttempts, utcNow);
+            // Recipient moze biti email ili telefon - trazimo korisnika po bilo kom od njih.
+            var user = await dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email == normalizedEmail || u.Phone == normalizedPhone, cancellationToken);
+
+            var utcNow = DateTime.UtcNow;
+
+            if (user is null || !user.IsActive || user.LoginCodeHash is null || !user.HasActiveLoginCode(utcNow))
+            {
+                return AuthErrors.InvalidCode;
+            }
+
+            if (!passwordHasher.Verify(user.LoginCodeHash, command.Code))
+            {
+                user.RegisterLoginCodeFailedAttempt(otpOptions.Value.MaxFailedAttempts, utcNow);
+                await dbContext.SaveChangesAsync(cancellationToken);
+
+                return user.Status == UserStatus.Blocked
+                    ? AuthErrors.AccountBlocked
+                    : AuthErrors.InvalidCode;
+            }
+
+            user.ClearLoginCode(utcNow);
             await dbContext.SaveChangesAsync(cancellationToken);
 
-            return user.Status == UserStatus.Blocked
-                ? AuthErrors.AccountBlocked
-                : AuthErrors.InvalidCode;
+            var (accessToken, expiresAtUtc) = jwtTokenGenerator.GenerateToken(user);
+
+            return new Result(user, accessToken, expiresAtUtc);
         }
-
-        user.ClearLoginCode(utcNow);
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        var (accessToken, expiresAtUtc) = jwtTokenGenerator.GenerateToken(user);
-
-        return new LoginResult(user, accessToken, expiresAtUtc);
     }
 }

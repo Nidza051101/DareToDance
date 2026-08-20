@@ -1,9 +1,9 @@
 namespace DareToDance.Api.Features.Auth.Commands.RequestLoginCodeByEmail;
 
-public static class RequestLoginCodeByEmailMapping
+public static partial class RequestLoginCodeByEmail
 {
-    public static RequestLoginCodeByEmailCommand ToCommand(this RequestLoginCodeByEmailRequest request)
+    public static Command ToCommand(this RequestLoginCodeByEmailRequest request)
     {
-        return new RequestLoginCodeByEmailCommand(request.Email);
+        return new Command(request.Email);
     }
 }

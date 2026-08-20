@@ -1,9 +1,9 @@
 namespace DareToDance.Api.Features.Users.Commands.BlockUser;
 
-public static class BlockUserMapping
+public static partial class BlockUser
 {
-    public static BlockUserCommand ToCommand(this Guid id)
+    public static Command ToCommand(this Guid id)
     {
-        return new BlockUserCommand(id);
+        return new Command(id);
     }
 }

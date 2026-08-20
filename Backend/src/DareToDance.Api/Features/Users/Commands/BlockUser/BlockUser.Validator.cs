@@ -2,11 +2,14 @@ using FluentValidation;
 
 namespace DareToDance.Api.Features.Users.Commands.BlockUser;
 
-public sealed class BlockUserCommandValidator : AbstractValidator<BlockUserCommand>
+public static partial class BlockUser
 {
-    public BlockUserCommandValidator()
+    public sealed class Validator : AbstractValidator<Command>
     {
-        RuleFor(c => c.Id)
-            .NotEmpty();
+        public Validator()
+        {
+            RuleFor(c => c.Id)
+                .NotEmpty();
+        }
     }
 }

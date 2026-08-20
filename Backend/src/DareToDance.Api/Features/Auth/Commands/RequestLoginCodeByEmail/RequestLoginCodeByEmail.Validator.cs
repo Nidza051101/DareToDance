@@ -2,13 +2,16 @@ using FluentValidation;
 
 namespace DareToDance.Api.Features.Auth.Commands.RequestLoginCodeByEmail;
 
-public sealed class RequestLoginCodeByEmailCommandValidator : AbstractValidator<RequestLoginCodeByEmailCommand>
+public static partial class RequestLoginCodeByEmail
 {
-    public RequestLoginCodeByEmailCommandValidator()
+    public sealed class Validator : AbstractValidator<Command>
     {
-        RuleFor(c => c.Email)
-            .NotEmpty()
-            .EmailAddress()
-            .MaximumLength(320);
+        public Validator()
+        {
+            RuleFor(c => c.Email)
+                .NotEmpty()
+                .EmailAddress()
+                .MaximumLength(320);
+        }
     }
 }

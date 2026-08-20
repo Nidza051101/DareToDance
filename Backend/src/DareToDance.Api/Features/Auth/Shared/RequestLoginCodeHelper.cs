@@ -4,29 +4,30 @@ using DareToDance.Infrastructure.Options;
 using DareToDance.Infrastructure.Persistence;
 using DareToDance.Infrastructure.Services;
 using ErrorOr;
-using Microsoft.Extensions.Options;
 
 namespace DareToDance.Api.Features.Auth.Shared;
 
-// Template Method: the shared logic (cooldown check, code generation, storing it
-// with an expiry - directly on User, no separate table) lives here. How the code
-// is sent (email/SMS) is the variable part, left to the concrete handlers via SendCodeAsync.
-public abstract class RequestLoginCodeHandlerBase(
-    AppDbContext dbContext,
-    IPasswordHasher passwordHasher,
-    IOptions<OtpSettings> otpOptions)
+// Zajednicka logika za slanje login koda - email i telefon flow su identicni
+// osim nacina slanja: provera cooldown-a, generisanje koda, hesiranje, cuvanje
+// na User-u sa rokom trajanja. Kanal slanja (email/SMS) se prosledjuje kao
+// delegat sa mesta poziva (kompozicija), umesto nasledjivanja/Template Method-a -
+// tako se odmah na mestu poziva vidi koji servis salje kod, bez skakanja u baznu klasu.
+public static class RequestLoginCodeHelper
 {
-    protected async Task<ErrorOr<Success>> RequestCodeAsync(
+    public static async Task<ErrorOr<Success>> RequestCodeAsync(
+        AppDbContext dbContext,
+        IPasswordHasher passwordHasher,
+        OtpSettings otpSettings,
         User user,
         string recipient,
+        Func<string, string, CancellationToken, Task> sendCodeAsync,
         CancellationToken cancellationToken)
     {
-        var otpSettings = otpOptions.Value;
         var utcNow = DateTime.UtcNow;
 
         if (!user.IsActive)
         {
-            // Same generic success as "user not found" - don't reveal account state.
+            // Isti generički uspeh kao i "korisnik ne postoji" - ne otkrivamo stanje naloga.
             return Result.Success;
         }
 
@@ -44,12 +45,10 @@ public abstract class RequestLoginCodeHandlerBase(
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        await SendCodeAsync(recipient, code, cancellationToken);
+        await sendCodeAsync(recipient, code, cancellationToken);
 
         return Result.Success;
     }
-
-    protected abstract Task SendCodeAsync(string recipient, string code, CancellationToken cancellationToken);
 
     private static string GenerateCode(int length)
     {

@@ -2,12 +2,15 @@ using FluentValidation;
 
 namespace DareToDance.Api.Features.Auth.Commands.RequestLoginCodeByPhone;
 
-public sealed class RequestLoginCodeByPhoneCommandValidator : AbstractValidator<RequestLoginCodeByPhoneCommand>
+public static partial class RequestLoginCodeByPhone
 {
-    public RequestLoginCodeByPhoneCommandValidator()
+    public sealed class Validator : AbstractValidator<Command>
     {
-        RuleFor(c => c.Phone)
-            .NotEmpty()
-            .MaximumLength(30);
+        public Validator()
+        {
+            RuleFor(c => c.Phone)
+                .NotEmpty()
+                .MaximumLength(30);
+        }
     }
 }

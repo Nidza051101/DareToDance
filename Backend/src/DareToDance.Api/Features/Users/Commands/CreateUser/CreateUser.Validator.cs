@@ -2,30 +2,33 @@ using FluentValidation;
 
 namespace DareToDance.Api.Features.Users.Commands.CreateUser;
 
-public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
+public static partial class CreateUser
 {
-    public CreateUserCommandValidator()
+    public sealed class Validator : AbstractValidator<Command>
     {
-        RuleFor(c => c.Email)
-            .NotEmpty()
-            .EmailAddress()
-            .MaximumLength(320);
+        public Validator()
+        {
+            RuleFor(c => c.Email)
+                .NotEmpty()
+                .EmailAddress()
+                .MaximumLength(320);
 
-        RuleFor(c => c.FirstName)
-            .NotEmpty()
-            .MaximumLength(100);
+            RuleFor(c => c.FirstName)
+                .NotEmpty()
+                .MaximumLength(100);
 
-        RuleFor(c => c.LastName)
-            .NotEmpty()
-            .MaximumLength(100);
+            RuleFor(c => c.LastName)
+                .NotEmpty()
+                .MaximumLength(100);
 
-        RuleFor(c => c.Password)
-            .NotEmpty()
-            .MinimumLength(8)
-            .MaximumLength(128);
+            RuleFor(c => c.Password)
+                .NotEmpty()
+                .MinimumLength(8)
+                .MaximumLength(128);
 
-        RuleFor(c => c.Phone)
-            .MaximumLength(30)
-            .When(c => !string.IsNullOrEmpty(c.Phone));
+            RuleFor(c => c.Phone)
+                .MaximumLength(30)
+                .When(c => !string.IsNullOrEmpty(c.Phone));
+        }
     }
 }

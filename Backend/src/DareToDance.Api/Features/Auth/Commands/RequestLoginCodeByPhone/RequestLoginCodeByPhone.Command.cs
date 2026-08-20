@@ -10,32 +10,38 @@ using Microsoft.Extensions.Options;
 
 namespace DareToDance.Api.Features.Auth.Commands.RequestLoginCodeByPhone;
 
-public sealed record RequestLoginCodeByPhoneCommand(string Phone) : IRequest<ErrorOr<Success>>;
-
-public sealed class RequestLoginCodeByPhoneCommandHandler(
-    AppDbContext dbContext,
-    IPasswordHasher passwordHasher,
-    IOptions<OtpSettings> otpOptions,
-    ISmsSender smsSender)
-    : RequestLoginCodeHandlerBase(dbContext, passwordHasher, otpOptions),
-        IRequestHandler<RequestLoginCodeByPhoneCommand, ErrorOr<Success>>
+public static partial class RequestLoginCodeByPhone
 {
-    public async Task<ErrorOr<Success>> Handle(RequestLoginCodeByPhoneCommand command, CancellationToken cancellationToken)
+    public sealed record Command(string Phone) : IRequest<ErrorOr<Success>>;
+
+    public sealed class Handler(
+        AppDbContext dbContext,
+        IPasswordHasher passwordHasher,
+        IOptions<OtpSettings> otpOptions,
+        ISmsSender smsSender)
+        : IRequestHandler<Command, ErrorOr<Success>>
     {
-        var phone = User.NormalizePhone(command.Phone)!;
-
-        var user = await dbContext.Users
-            .FirstOrDefaultAsync(u => u.Phone == phone, cancellationToken);
-
-        if (user is null)
+        public async Task<ErrorOr<Success>> Handle(Command command, CancellationToken cancellationToken)
         {
-            // Don't reveal whether the account exists - prevents account enumeration.
-            return Result.Success;
+            var phone = User.NormalizePhone(command.Phone)!;
+
+            var user = await dbContext.Users
+                .FirstOrDefaultAsync(u => u.Phone == phone, cancellationToken);
+
+            if (user is null)
+            {
+                // Ne otkrivamo da li nalog postoji - sprecava account enumeration.
+                return Result.Success;
+            }
+
+            return await RequestLoginCodeHelper.RequestCodeAsync(
+                dbContext,
+                passwordHasher,
+                otpOptions.Value,
+                user,
+                phone,
+                smsSender.SendLoginCodeAsync,
+                cancellationToken);
         }
-
-        return await RequestCodeAsync(user, phone, cancellationToken);
     }
-
-    protected override Task SendCodeAsync(string recipient, string code, CancellationToken cancellationToken)
-        => smsSender.SendLoginCodeAsync(recipient, code, cancellationToken);
 }

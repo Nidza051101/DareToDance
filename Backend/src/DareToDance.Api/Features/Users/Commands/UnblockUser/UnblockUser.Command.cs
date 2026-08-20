@@ -8,26 +8,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DareToDance.Api.Features.Users.Commands.UnblockUser;
 
-public sealed record UnblockUserCommand(Guid Id) : IRequest<ErrorOr<User>>;
-
-public sealed class UnblockUserCommandHandler(AppDbContext dbContext)
-    : IRequestHandler<UnblockUserCommand, ErrorOr<User>>
+public static partial class UnblockUser
 {
-    public async Task<ErrorOr<User>> Handle(UnblockUserCommand command, CancellationToken cancellationToken)
+    public sealed record Command(Guid Id) : IRequest<ErrorOr<User>>;
+
+    public sealed class Handler(AppDbContext dbContext)
+        : IRequestHandler<Command, ErrorOr<User>>
     {
-        var userId = UserId.Create(command.Id);
-
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
-
-        if (user is null)
+        public async Task<ErrorOr<User>> Handle(Command command, CancellationToken cancellationToken)
         {
-            return UserErrors.NotFound;
+            var userId = UserId.Create(command.Id);
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+            if (user is null)
+            {
+                return UserErrors.NotFound;
+            }
+
+            user.Activate(DateTime.UtcNow);
+
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            return user;
         }
-
-        user.Activate(DateTime.UtcNow);
-
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        return user;
     }
 }
