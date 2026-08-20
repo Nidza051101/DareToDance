@@ -40,6 +40,21 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(20)
             .IsRequired();
 
+        builder.Property(u => u.UserRole)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .IsRequired();
+
+        builder.Property(u => u.LoginCodeHash)
+            .HasMaxLength(500);
+
+        builder.Property(u => u.LoginCodeExpiresAtUtc);
+
+        builder.Property(u => u.LoginCodeCreatedAtUtc);
+
+        builder.Property(u => u.LoginCodeFailedAttempts)
+            .IsRequired();
+
         builder.Property(u => u.CreatedAtUtc)
             .IsRequired();
 

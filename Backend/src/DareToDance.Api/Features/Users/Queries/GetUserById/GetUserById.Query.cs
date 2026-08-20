@@ -8,24 +8,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DareToDance.Api.Features.Users.Queries.GetUserById;
 
-public sealed record GetUserByIdQuery(Guid Id) : IRequest<ErrorOr<User>>;
-
-public sealed class GetUserByIdQueryHandler(AppDbContext dbContext)
-    : IRequestHandler<GetUserByIdQuery, ErrorOr<User>>
+public static class GetUserById
 {
-    public async Task<ErrorOr<User>> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
+    public sealed record Query(Guid Id) : IRequest<ErrorOr<User>>;
+
+    public sealed class Handler(AppDbContext dbContext)
+        : IRequestHandler<Query, ErrorOr<User>>
     {
-        var userId = UserId.Create(query.Id);
-
-        var user = await dbContext.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
-
-        if (user is null)
+        public async Task<ErrorOr<User>> Handle(Query query, CancellationToken cancellationToken)
         {
-            return UserErrors.NotFound;
-        }
+            var userId = UserId.Create(query.Id);
 
-        return user;
+            var user = await dbContext.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+            if (user is null)
+            {
+                return UserErrors.NotFound;
+            }
+
+            return user;
+        }
     }
 }

@@ -9,55 +9,59 @@ using Npgsql;
 
 namespace DareToDance.Api.Features.Users.Commands.CreateUser;
 
-public sealed record CreateUserCommand(
-    string Email,
-    string FirstName,
-    string LastName,
-    string Password) : IRequest<ErrorOr<User>>
+public static partial class CreateUser
 {
-    
-    public override string ToString()
-        => $"CreateUserCommand {{ Email = {Email}, FirstName = {FirstName}, LastName = {LastName}, Password = [REDACTED] }}";
-}
-
-public sealed class CreateUserCommandHandler(
-    AppDbContext dbContext,
-    IPasswordHasher passwordHasher)
-    : IRequestHandler<CreateUserCommand, ErrorOr<User>>
-{
-    public async Task<ErrorOr<User>> Handle(CreateUserCommand command, CancellationToken cancellationToken)
+    public sealed record Command(
+        string Email,
+        string FirstName,
+        string LastName,
+        string Password,
+        string? Phone = null) : IRequest<ErrorOr<User>>
     {
-        var email = command.Email.Trim().ToLowerInvariant();
+        public override string ToString()
+            => $"CreateUser.Command {{ Email = {Email}, FirstName = {FirstName}, LastName = {LastName}, Phone = {Phone}, Password = [REDACTED] }}";
+    }
 
-        if (await dbContext.Users.AnyAsync(u => u.Email == email, cancellationToken))
+    public sealed class Handler(
+        AppDbContext dbContext,
+        IPasswordHasher passwordHasher)
+        : IRequestHandler<Command, ErrorOr<User>>
+    {
+        public async Task<ErrorOr<User>> Handle(Command command, CancellationToken cancellationToken)
         {
-            return UserErrors.DuplicateEmail;
-        }
+            var email = command.Email.Trim().ToLowerInvariant();
 
-        // TODO: PasswordHash je uklonjen iz User modela (nije njegova odgovornost) —
-        // treba odluciti gde se cuva hash lozinke (npr. poseban Credentials entitet/tabela).
-        // passwordHasher.Hash(command.Password) trenutno se ne perzistuje nigde.
-        var user = User.Create(
-            email,
-            command.FirstName,
-            command.LastName);
-
-        dbContext.Users.Add(user);
-
-        try
-        {
-            await dbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateException e) when (
-            e.InnerException is PostgresException
+            if (await dbContext.Users.AnyAsync(u => u.Email == email, cancellationToken))
             {
-                SqlState: PostgresErrorCodes.UniqueViolation,
-                ConstraintName: "ix_users_email"
-            })
-        {
-            return UserErrors.DuplicateEmail;
-        }
+                return UserErrors.DuplicateEmail;
+            }
 
-        return user;
+            // TODO: PasswordHash je uklonjen iz User modela (nije njegova odgovornost) —
+            // treba odluciti gde se cuva hash lozinke (npr. poseban Credentials entitet/tabela).
+            // passwordHasher.Hash(command.Password) trenutno se ne perzistuje nigde.
+            var user = User.Create(
+                email,
+                command.FirstName,
+                command.LastName,
+                command.Phone);
+
+            dbContext.Users.Add(user);
+
+            try
+            {
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException e) when (
+                e.InnerException is PostgresException
+                {
+                    SqlState: PostgresErrorCodes.UniqueViolation,
+                    ConstraintName: "ix_users_email"
+                })
+            {
+                return UserErrors.DuplicateEmail;
+            }
+
+            return user;
+        }
     }
 }

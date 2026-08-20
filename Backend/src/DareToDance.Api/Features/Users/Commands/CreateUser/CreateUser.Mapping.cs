@@ -1,13 +1,14 @@
 namespace DareToDance.Api.Features.Users.Commands.CreateUser;
 
-public static class CreateUserMapping
+public static partial class CreateUser
 {
-    public static CreateUserCommand ToCommand(this CreateUserRequest request)
+    public static Command ToCommand(this CreateUserRequest request)
     {
-        return new CreateUserCommand(
+        return new Command(
             request.Email,
             request.FirstName,
             request.LastName,
-            request.Password);
+            request.Password,
+            request.Phone);
     }
 }

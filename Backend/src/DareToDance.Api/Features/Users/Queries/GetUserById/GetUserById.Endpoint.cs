@@ -10,7 +10,7 @@ public sealed class GetUserByIdEndpoint : UsersEndpointBase
     [AllowAnonymous]
     public async Task<IActionResult> Handle(Guid id, CancellationToken cancellationToken)
     {
-        var result = await Sender.Send(new GetUserByIdQuery(id), cancellationToken);
+        var result = await Sender.Send(new GetUserById.Query(id), cancellationToken);
 
         return result.Match(
             user => Ok(user.ToResponse()),
