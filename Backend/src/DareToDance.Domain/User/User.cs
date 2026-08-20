@@ -26,11 +26,7 @@ public sealed class User : AggregateRoot<UserId>
         string email,
         string? phone,
         UserStatus status,
-
-        UserRole role,
-
         UserRole userRole,
-
         DateTime createdAtUtc,
         DateTime updatedAtUtc)
         : base(id, createdAtUtc, updatedAtUtc)
@@ -40,15 +36,8 @@ public sealed class User : AggregateRoot<UserId>
         Email = email;
         Phone = phone;
         Status = status;
-
-        UserRole = role;
-    }
-
-    private User() { }
-
         UserRole = userRole;
     }
-
 
     public static User Create(
         string email,
@@ -63,11 +52,7 @@ public sealed class User : AggregateRoot<UserId>
             firstName.Trim(),
             lastName.Trim(),
             email.Trim().ToLowerInvariant(),
-
-            phone?.Trim(),
-
             NormalizePhone(phone),
-
             UserStatus.Active,
             UserRole.Member,
             utcNow,
