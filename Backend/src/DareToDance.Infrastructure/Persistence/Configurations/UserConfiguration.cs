@@ -9,8 +9,6 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.ToTable("Users");
-
         builder.HasKey(u => u.Id);
 
         builder.Property(u => u.Id)
@@ -84,6 +82,7 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             Phone = "0641059679",
             Status = UserStatus.Active,
             UserRole = UserRole.Admin,
+            LoginCodeFailedAttempts = 0,
             CreatedAtUtc = new DateTime(
                 2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             UpdatedAtUtc = new DateTime(
