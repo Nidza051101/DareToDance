@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Xunit;
 
-namespace DareToDance.Api.IntgrationTests.Features;
+namespace DareToDance.Api.IntgrationTests.Features.RegisterUserTest;
 
 public class RegisterUserTest : IClassFixture<CustomWebApplicationFactory>
 {
@@ -25,9 +25,7 @@ public class RegisterUserTest : IClassFixture<CustomWebApplicationFactory>
             Phone = "123456789"
         };
 
-        var response = await _client.PostAsJsonAsync(
-            "/users/register",
-            request);
+        var response = await _client.PostAsJsonAsync("/users/register",request);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
