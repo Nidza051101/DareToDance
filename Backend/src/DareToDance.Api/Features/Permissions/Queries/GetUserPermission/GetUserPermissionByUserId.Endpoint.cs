@@ -7,7 +7,7 @@ using DareToDance.Domain.User;
 
 namespace DareToDance.Api.Features.Permissions.Queries.GetUserPermissionById;
 
-public sealed class GetPermissionByIdEndpoint : UsersEndpointBase
+public sealed class GetPermissionByUserIdEndpoint : UsersEndpointBase
 {
     [HttpGet("{id}/permissions", Name = "GetUserPermissions")]
     [Authorize(Roles = nameof(UserRole.Admin))]
