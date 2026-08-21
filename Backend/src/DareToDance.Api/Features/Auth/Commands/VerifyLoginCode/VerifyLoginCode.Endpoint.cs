@@ -6,8 +6,6 @@ namespace DareToDance.Api.Features.Auth.Commands.VerifyLoginCode;
 
 public sealed record VerifyLoginCodeRequest(string Recipient, string Code);
 
-public sealed record AccessTokenResponse(string AccessToken, DateTime ExpiresAtUtc);
-
 public sealed class VerifyLoginCodeEndpoint : AuthEndpointBase
 {
     [HttpPost("login/verify")]
