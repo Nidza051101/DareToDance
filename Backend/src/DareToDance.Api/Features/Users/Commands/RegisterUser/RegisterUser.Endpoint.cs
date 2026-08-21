@@ -27,11 +27,7 @@ public sealed class RegisterUserEndpoint : UsersEndpointBase
             return BadRequest();
         }
 
-        var command = new RegisterUserCommand(
-            request.FirstName,
-            request.LastName,
-            request.Email,
-            request.Phone ?? string.Empty);
+        var command = request.ToCommand();
 
         var result = await Sender.Send(
             command,
