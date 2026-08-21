@@ -15,4 +15,8 @@ public static class AuthErrors
     public static readonly Error AccountBlocked = Error.Forbidden(
         code: "Auth.AccountBlocked",
         description: "The account has been blocked after too many failed attempts.");
+
+    public static readonly Error InvalidRefreshToken = Error.Unauthorized(
+        code: "Auth.InvalidRefreshToken",
+        description: "The refresh token is invalid, expired or has been revoked. Please log in again.");
 }

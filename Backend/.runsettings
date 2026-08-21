@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <!-- Testovi dele jednu instancu CustomWebApplicationFactory (Testcontainers Postgres) preko
+         xUnit "Integration Tests" kolekcije - to radi samo dok je sve u JEDNOM test procesu.
+         MaxCpuCount=1 sprecava test runner (npr. VSCode-ov Testing panel) da razbije izvrsavanje
+         u vise paralelnih procesa, sto bi svakom dalo svoj kontejner umesto deljenog. -->
+    <MaxCpuCount>1</MaxCpuCount>
+    <DisableParallelization>true</DisableParallelization>
+  </RunConfiguration>
+</RunSettings>

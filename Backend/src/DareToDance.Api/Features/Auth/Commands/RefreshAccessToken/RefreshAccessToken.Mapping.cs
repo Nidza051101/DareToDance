@@ -1,12 +1,12 @@
 using DareToDance.Api.Features.Auth.Shared;
 
-namespace DareToDance.Api.Features.Auth.Commands.VerifyLoginCode;
+namespace DareToDance.Api.Features.Auth.Commands.RefreshAccessToken;
 
-public static partial class VerifyLoginCode
+public static partial class RefreshAccessToken
 {
-    public static Command ToCommand(this VerifyLoginCodeRequest request)
+    public static Command ToCommand(this RefreshAccessTokenRequest request)
     {
-        return new Command(request.Recipient, request.Code);
+        return new Command(request.RefreshToken);
     }
 
     public static AuthTokensResponse ToResponse(this Result result)
