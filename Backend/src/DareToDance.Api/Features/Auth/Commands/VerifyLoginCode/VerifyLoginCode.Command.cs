@@ -1,4 +1,5 @@
 using DareToDance.Api.Features.Auth.Shared;
+using DareToDance.Domain.RefreshToken;
 using DareToDance.Domain.User;
 using DareToDance.Infrastructure.Options;
 using DareToDance.Infrastructure.Persistence;
@@ -14,13 +15,19 @@ public static partial class VerifyLoginCode
 {
     public sealed record Command(string Recipient, string Code) : IRequest<ErrorOr<Result>>;
 
-    public sealed record Result(User User, string AccessToken, DateTime ExpiresAtUtc);
+    public sealed record Result(
+        User User,
+        string AccessToken,
+        DateTime AccessTokenExpiresAtUtc,
+        string RefreshToken,
+        DateTime RefreshTokenExpiresAtUtc);
 
     public sealed class Handler(
         AppDbContext dbContext,
         IPasswordHasher passwordHasher,
         IOptions<OtpSettings> otpOptions,
-        IJwtTokenGenerator jwtTokenGenerator)
+        IJwtTokenGenerator jwtTokenGenerator,
+        IRefreshTokenService refreshTokenService)
         : IRequestHandler<Command, ErrorOr<Result>>
     {
         public async Task<ErrorOr<Result>> Handle(Command command, CancellationToken cancellationToken)
@@ -45,11 +52,16 @@ public static partial class VerifyLoginCode
             }
 
             user.ClearLoginCode(utcNow);
+
+            var (accessToken, accessTokenExpiresAtUtc) = jwtTokenGenerator.GenerateToken(user);
+
+            var (rawRefreshToken, refreshTokenHash, refreshTokenExpiresAtUtc) = refreshTokenService.Generate(utcNow);
+            var refreshToken = RefreshToken.Create(user.Id, refreshTokenHash, utcNow, refreshTokenExpiresAtUtc);
+            dbContext.RefreshTokens.Add(refreshToken);
+
             await dbContext.SaveChangesAsync(cancellationToken);
 
-            var (accessToken, expiresAtUtc) = jwtTokenGenerator.GenerateToken(user);
-
-            return new Result(user, accessToken, expiresAtUtc);
+            return new Result(user, accessToken, accessTokenExpiresAtUtc, rawRefreshToken, refreshTokenExpiresAtUtc);
         }
 
         // Recipient moze biti email ili telefon - trazimo korisnika po bilo kom od njih.
