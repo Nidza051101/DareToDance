@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using DareToDance.Api.IntgrationTests.Common;
 using DareToDance.Domain.PermissionEntity;
 using DareToDance.Domain.User;
@@ -27,7 +28,7 @@ public sealed class GetPermissionsByUserIdTest : IClassFixture<CustomWebApplicat
     [Fact]
     public async Task GetPermissionsByUserId_Should_ReturnAssignedPermissions_WhenUserHasPermissions()
     {
-        var user = User.Create("test@test.com", "Test", "User");
+        var user = User.Create($"test_{Guid.NewGuid()}@test.com", "Test", "User");
         var permission = Permission.Create("Dance.Read", "Allows reading dance information.");
         var userPermission = UserPermission.Create(user.Id, permission.Id);
 
@@ -43,22 +44,24 @@ public sealed class GetPermissionsByUserIdTest : IClassFixture<CustomWebApplicat
 
         await AuthorizeAsAdminAsync(scope);
 
-        var response = await _client.GetAsync($"/permissions/user/{user.Id.Value}");
+        var response = await _client.GetAsync($"/users/{user.Id.Value}/permissions");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-       
-        var result = await response.Content.ReadFromJsonAsync<List<Permission>>();
 
-        Assert.NotNull(result);
-        Assert.Single(result);
-        Assert.Equal(permission.Id.Value, result[0].Id.Value);
-        Assert.Equal(permission.Name, result[0].Name);
+        // Čitanje kao JsonElement da se izbegne greška sa nedostatkom parametarskog/podrazumevanog konstruktora na domenskom entitetu
+        var result = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+        Assert.Equal(JsonValueKind.Array, result.ValueKind);
+        Assert.Single(result.EnumerateArray().ToList());
+
+        var firstPermission = result[0];
+        Assert.Equal(permission.Name, firstPermission.GetProperty("name").GetString());
     }
 
     [Fact]
     public async Task GetPermissionsByUserId_Should_ReturnEmptyList_WhenUserHasNoPermissions()
     {
-        var user = User.Create("test@test.com", "Test", "User");
+        var user = User.Create($"test_{Guid.NewGuid()}@test.com", "Test", "User");
 
         using var scope = _factory.Services.CreateScope();
 
@@ -70,14 +73,14 @@ public sealed class GetPermissionsByUserIdTest : IClassFixture<CustomWebApplicat
 
         await AuthorizeAsAdminAsync(scope);
 
-        var response = await _client.GetAsync($"/permissions/user/{user.Id.Value}");
+        var response = await _client.GetAsync($"/users/{user.Id.Value}/permissions");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var result = await response.Content.ReadFromJsonAsync<List<Permission>>();
+        var result = await response.Content.ReadFromJsonAsync<JsonElement>();
 
-        Assert.NotNull(result);
-        Assert.Empty(result);
+        Assert.Equal(JsonValueKind.Array, result.ValueKind);
+        Assert.Empty(result.EnumerateArray());
     }
 
     [Fact]
@@ -85,7 +88,7 @@ public sealed class GetPermissionsByUserIdTest : IClassFixture<CustomWebApplicat
     {
         _client.DefaultRequestHeaders.Authorization = null;
 
-        var response = await _client.GetAsync($"/permissions/user/{Guid.NewGuid()}");
+        var response = await _client.GetAsync($"/users/{Guid.NewGuid()}/permissions");
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -97,7 +100,7 @@ public sealed class GetPermissionsByUserIdTest : IClassFixture<CustomWebApplicat
 
         await AuthorizeAsAdminAsync(scope);
 
-        var response = await _client.GetAsync($"/permissions/user/{Guid.NewGuid()}");
+        var response = await _client.GetAsync($"/users/{Guid.NewGuid()}/permissions");
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -114,3 +117,4 @@ public sealed class GetPermissionsByUserIdTest : IClassFixture<CustomWebApplicat
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
     }
 }
+
