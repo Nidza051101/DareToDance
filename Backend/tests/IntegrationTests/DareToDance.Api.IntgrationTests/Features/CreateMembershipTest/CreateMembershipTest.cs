@@ -13,7 +13,8 @@ using Xunit;
 
 namespace DareToDance.Api.IntgrationTests.Features.CreateMembershipTest;
 
-public class CreateMembershipTest : IClassFixture<CustomWebApplicationFactory>
+[Collection("Integration Tests")]
+public class CreateMembershipTest
 {
     private readonly HttpClient _client;
     private readonly CustomWebApplicationFactory _factory;

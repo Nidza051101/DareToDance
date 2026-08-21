@@ -9,7 +9,8 @@ using Xunit;
 
 namespace DareToDance.Api.IntgrationTests.Features.RequestLoginCodeByEmailTest;
 
-public class RequestLoginCodeByEmailTest : IClassFixture<CustomWebApplicationFactory>
+[Collection("Integration Tests")]
+public class RequestLoginCodeByEmailTest
 {
     private readonly HttpClient _client;
     private readonly CustomWebApplicationFactory _factory;

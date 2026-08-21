@@ -9,7 +9,8 @@ using Xunit;
 
 namespace DareToDance.Api.IntgrationTests.Features;
 
-public class VerifyLoginCodeTest : IClassFixture<CustomWebApplicationFactory>
+[Collection("Integration Tests")]
+public class VerifyLoginCodeTest
 {
     private readonly HttpClient _client;
     private readonly CustomWebApplicationFactory _factory;
@@ -29,7 +30,7 @@ public class VerifyLoginCodeTest : IClassFixture<CustomWebApplicationFactory>
             .GetRequiredService<AppDbContext>();
 
         var user = User.Create(
-            "john.doe@test.com",
+            "verify.login.code@test.com",
             "John",
             "Doe");
 
@@ -50,7 +51,7 @@ public class VerifyLoginCodeTest : IClassFixture<CustomWebApplicationFactory>
 
         var request = new
         {
-            Recipient = "john.doe@test.com",
+            Recipient = "verify.login.code@test.com",
             Code = "123456"
         };
 
