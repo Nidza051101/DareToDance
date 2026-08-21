@@ -1,4 +1,6 @@
-﻿using DareToDance.Infrastructure.Persistence;
+﻿using DareToDance.Domain.User;
+using DareToDance.Infrastructure.Persistence;
+using DareToDance.Infrastructure.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -65,3 +67,4 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         return _dbContainer.StopAsync();
     }
 }
+
