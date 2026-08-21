@@ -12,7 +12,8 @@ using Xunit;
 
 namespace DareToDance.Api.IntgrationTests.Features.RefreshAccessTokenTest;
 
-public class RefreshAccessTokenTest : IClassFixture<CustomWebApplicationFactory>
+[Collection("Integration Tests")]
+public class RefreshAccessTokenTest
 {
     private readonly HttpClient _client;
     private readonly CustomWebApplicationFactory _factory;

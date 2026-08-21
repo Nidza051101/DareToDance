@@ -5,7 +5,8 @@ using Xunit;
 
 namespace DareToDance.Api.IntgrationTests.Features.RegisterUserTest;
 
-public class RegisterUserTest : IClassFixture<CustomWebApplicationFactory>
+[Collection("Integration Tests")]
+public class RegisterUserTest
 {
     private readonly HttpClient _client;
 

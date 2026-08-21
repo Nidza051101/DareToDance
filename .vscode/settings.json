@@ -1,3 +1,4 @@
 {
-  "dotnet.defaultSolution": "Backend/Backend.sln"
+  "dotnet.defaultSolution": "Backend/Backend.sln",
+  "dotnet.unitTests.runSettingsPath": "Backend/.runsettings"
 }

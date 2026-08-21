@@ -10,7 +10,8 @@ using Xunit;
 
 namespace DareToDance.Api.IntgrationTests.Features.UnblockUserTest;
 
-public class UnblockUserTest : IClassFixture<CustomWebApplicationFactory>
+[Collection("Integration Tests")]
+public class UnblockUserTest
 {
     private readonly HttpClient _client;
     private readonly CustomWebApplicationFactory _factory;

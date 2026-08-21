@@ -1,3 +1,4 @@
+using DareToDance.Domain.Membership;
 using DareToDance.Domain.PermissionEntity;
 using DareToDance.Domain.RefreshToken;
 using DareToDance.Domain.User;
@@ -14,6 +15,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<UserPermission> UserPermissions => Set<UserPermission>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Membership> Memberships => Set<Membership>();
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

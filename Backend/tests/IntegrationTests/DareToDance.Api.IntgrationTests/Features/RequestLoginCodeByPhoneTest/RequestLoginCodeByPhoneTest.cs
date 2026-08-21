@@ -9,7 +9,8 @@ using Xunit;
 
 namespace DareToDance.Api.IntgrationTests.Features.RequestLoginCodeByPhoneTest;
 
-public class RequestLoginCodeByPhoneTest : IClassFixture<CustomWebApplicationFactory>
+[Collection("Integration Tests")]
+public class RequestLoginCodeByPhoneTest
 {
     private readonly HttpClient _client;
     private readonly CustomWebApplicationFactory _factory;
