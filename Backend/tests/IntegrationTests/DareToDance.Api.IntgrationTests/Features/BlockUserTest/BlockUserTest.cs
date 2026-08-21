@@ -57,33 +57,24 @@ public class BlockUserTest
     [Fact]
     public async Task BlockUser_Should_ReturnUnauthorized_WhenNoTokenProvided()
     {
-        // Arrange - namerno bez Authorization header-a (cistimo ga za slucaj da je
-        // ostao od nekog drugog testa u istoj klasi, koja deli isti _client).
         _client.DefaultRequestHeaders.Authorization = null;
 
-        // Act
         var response = await _client.PostAsync($"/users/{Guid.NewGuid()}/block", null);
 
-        // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
     public async Task BlockUser_Should_ReturnNotFound_WhenUserDoesNotExist()
     {
-        // Arrange
         using var scope = _factory.Services.CreateScope();
         await AuthorizeAsAdminAsync(scope);
 
-        // Act
         var response = await _client.PostAsync($"/users/{Guid.NewGuid()}/block", null);
 
-        // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
-    // Seedovan admin nalog (iz UserConfiguration.HasData) - koristimo ga da dobijemo pravi JWT
-    // sa Admin rolom, jer BlockUser/UnblockUser zahtevaju [Authorize(Roles = "Admin")].
     private async Task AuthorizeAsAdminAsync(IServiceScope scope)
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
