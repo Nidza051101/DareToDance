@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
 
-namespace DareToDance.Api.Features.Permissions.Commands.AssignPermission;
+namespace DareToDance.Api.Features.Permissions.Commands.SetUserPermission;
 
-public sealed class AssignPermissionCommandValidator
-    : AbstractValidator<AssignPermissionCommand>
+public sealed class SetUserPermissionCommandValidator : AbstractValidator<SetUserPermissionCommand>
 {
-    public AssignPermissionCommandValidator()
+    public SetUserPermissionCommandValidator()
     {
         RuleFor(x => x.UserId)
             .NotEmpty()
