@@ -7,5 +7,7 @@ public static class AuthMapping
             result.AccessToken.Token,
             "Bearer",
             result.AccessToken.ExpiresAtUtc,
-            result.User.Id.Value);
+            result.User.Id.Value,
+            result.RefreshToken,
+            result.RefreshTokenExpiresAtUtc);
 }

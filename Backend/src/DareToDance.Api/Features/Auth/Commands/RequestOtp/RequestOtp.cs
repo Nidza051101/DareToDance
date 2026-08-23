@@ -75,13 +75,22 @@ public static class RequestOtp
             var code = otpGenerator.Generate(settings.CodeLength);
             var codeHash = otpCodeHasher.Hash(challengeId.Value, code);
 
-            var challenge = OtpChallenge.Create(
+            var challengeResult = OtpChallenge.Create(
                 challengeId,
                 user.Id,
                 codeHash,
                 OtpPurpose.Login,
                 utcNow,
                 TimeSpan.FromSeconds(settings.ExpirySeconds));
+
+            if (challengeResult.IsError)
+            {
+                // A tripped domain invariant is a bug: propagate as-is so it
+                // surfaces as a 500, never as a silent 202.
+                return challengeResult.Errors;
+            }
+
+            var challenge = challengeResult.Value;
 
             try
             {

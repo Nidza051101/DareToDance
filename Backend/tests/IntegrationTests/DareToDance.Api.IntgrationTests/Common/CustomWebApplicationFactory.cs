@@ -48,10 +48,16 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         builder.UseSetting("OtpSettings:MaxFailedAttempts", "3");
         builder.UseSetting("OtpSettings:MaxCodesPerDay", "10");
 
+        // Refresh lifetimes pinned for the same reason; RefreshTests and
+        // LogoutTests advance FakeTimeProvider against exactly these numbers.
+        builder.UseSetting("RefreshTokenSettings:SlidingLifetimeDays", "30");
+        builder.UseSetting("RefreshTokenSettings:AbsoluteLifetimeDays", "90");
+
         // Relaxed transport limits so unrelated tests never 429 each other;
         // RateLimitTests re-tightens these in its own derived factory.
         builder.UseSetting("RateLimitSettings:OtpRequestPermitLimit", "10000");
         builder.UseSetting("RateLimitSettings:OtpVerifyPermitLimit", "10000");
+        builder.UseSetting("RateLimitSettings:RefreshPermitLimit", "10000");
 
         builder.ConfigureTestServices(services =>
         {

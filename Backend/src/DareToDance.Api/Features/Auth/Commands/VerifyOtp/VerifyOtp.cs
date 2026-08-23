@@ -69,7 +69,14 @@ public static class VerifyOtp
 
             if (!otpCodeHasher.Verify(challenge.CodeHash, challenge.Id.Value, command.Code))
             {
-                challenge.RegisterFailedAttempt();
+                var attemptResult = challenge.RegisterFailedAttempt();
+
+                if (attemptResult.IsError)
+                {
+                    // Unreachable after the IsActive gate above — a tripped
+                    // invariant is a bug and must surface as a 500, not a 401.
+                    return attemptResult.Errors;
+                }
 
                 try
                 {
@@ -95,7 +102,25 @@ public static class VerifyOtp
                 return AuthErrors.InvalidCode;
             }
 
-            challenge.Consume(utcNow);
+            var consumeResult = challenge.Consume(utcNow);
+
+            if (consumeResult.IsError)
+            {
+                return consumeResult.Errors;
+            }
+
+            // First token of a new session family, inserted in the same
+            // SaveChanges as the challenge consumption: a lost race issues
+            // nothing, and a successful login always has its refresh token.
+            var refreshTokenResult = tokenService.CreateRefreshToken(user.Id, utcNow);
+
+            if (refreshTokenResult.IsError)
+            {
+                return refreshTokenResult.Errors;
+            }
+
+            var refreshToken = refreshTokenResult.Value;
+            dbContext.RefreshTokens.Add(refreshToken.Token);
 
             try
             {
@@ -115,7 +140,11 @@ public static class VerifyOtp
                 challenge.Id.Value,
                 user.Id.Value);
 
-            return new AuthResult(user, accessToken);
+            return new AuthResult(
+                user,
+                accessToken,
+                refreshToken.WireToken,
+                refreshToken.Token.ExpiresAtUtc);
         }
 
         // Mirror the real path's challenge query and HMAC work for unknown

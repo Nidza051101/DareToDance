@@ -33,10 +33,19 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddOptions<RefreshTokenSettings>()
+            .Bind(configuration.GetSection(RefreshTokenSettings.SectionName))
+            .ValidateDataAnnotations()
+            .Validate(
+                s => s.AbsoluteLifetimeDays >= s.SlidingLifetimeDays,
+                "RefreshTokenSettings:AbsoluteLifetimeDays must be greater than or equal to SlidingLifetimeDays.")
+            .ValidateOnStart();
+
         services.AddSingleton(TimeProvider.System);
 
         services.AddSingleton<IOtpGenerator, OtpGenerator>();
         services.AddSingleton<IOtpCodeHasher, HmacOtpCodeHasher>();
+        services.AddSingleton<IRefreshTokenHasher, Sha256RefreshTokenHasher>();
         services.AddSingleton<ITokenService, TokenService>();
 
         if (isDevelopment)

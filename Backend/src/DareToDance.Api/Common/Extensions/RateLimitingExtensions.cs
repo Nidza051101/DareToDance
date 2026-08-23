@@ -11,6 +11,11 @@ public sealed class RateLimitSettings
     public int OtpRequestWindowMinutes { get; init; } = 15;
     public int OtpVerifyPermitLimit { get; init; } = 10;
     public int OtpVerifyWindowMinutes { get; init; } = 15;
+
+    // Shared by refresh and logout. Generous on purpose: honest clients
+    // refresh roughly every 15 minutes, but many can sit behind one NAT.
+    public int RefreshPermitLimit { get; init; } = 60;
+    public int RefreshWindowMinutes { get; init; } = 15;
 }
 
 public static class RateLimitingExtensions
@@ -59,6 +64,17 @@ public static class RateLimitingExtensions
                     {
                         PermitLimit = settings.OtpVerifyPermitLimit,
                         Window = TimeSpan.FromMinutes(settings.OtpVerifyWindowMinutes),
+                        SegmentsPerWindow = 6,
+                        QueueLimit = 0
+                    }));
+
+            options.AddPolicy("auth-refresh", httpContext =>
+                RateLimitPartition.GetSlidingWindowLimiter(
+                    ClientKey(httpContext),
+                    _ => new SlidingWindowRateLimiterOptions
+                    {
+                        PermitLimit = settings.RefreshPermitLimit,
+                        Window = TimeSpan.FromMinutes(settings.RefreshWindowMinutes),
                         SegmentsPerWindow = 6,
                         QueueLimit = 0
                     }));

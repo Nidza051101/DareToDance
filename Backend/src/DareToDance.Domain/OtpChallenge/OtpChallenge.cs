@@ -1,6 +1,7 @@
 using DareToDance.Domain.Common;
 using DareToDance.Domain.OtpChallenge.Id;
 using DareToDance.Domain.User.Id;
+using ErrorOr;
 
 namespace DareToDance.Domain.OtpChallenge;
 
@@ -36,7 +37,7 @@ public sealed class OtpChallenge : AggregateRoot<OtpChallengeId>
         InvalidatedAtUtc = invalidatedAtUtc;
     }
     
-    public static OtpChallenge Create(
+    public static ErrorOr<OtpChallenge> Create(
         OtpChallengeId id,
         UserId userId,
         string codeHash,
@@ -46,12 +47,12 @@ public sealed class OtpChallenge : AggregateRoot<OtpChallengeId>
     {
         if (string.IsNullOrWhiteSpace(codeHash))
         {
-            throw new ArgumentException("The code hash is required.", nameof(codeHash));
+            return OtpChallengeErrors.CodeHashRequired;
         }
 
         if (lifetime <= TimeSpan.Zero)
         {
-            throw new ArgumentException("The lifetime must be positive.", nameof(lifetime));
+            return OtpChallengeErrors.LifetimeNotPositive;
         }
 
         return new OtpChallenge(
@@ -75,31 +76,31 @@ public sealed class OtpChallenge : AggregateRoot<OtpChallengeId>
                && FailedAttempts < maxFailedAttempts;
     }
 
-    public void RegisterFailedAttempt()
+    public ErrorOr<Success> RegisterFailedAttempt()
     {
         if (ConsumedAtUtc is not null || InvalidatedAtUtc is not null)
         {
-            throw new InvalidOperationException(
-                "Cannot register a failed attempt on a consumed or invalidated challenge.");
+            return OtpChallengeErrors.AlreadyFinalized;
         }
 
         FailedAttempts++;
+        return Result.Success;
     }
 
-    public void Consume(DateTime utcNow)
+    public ErrorOr<Success> Consume(DateTime utcNow)
     {
         if (ConsumedAtUtc is not null || InvalidatedAtUtc is not null)
         {
-            throw new InvalidOperationException(
-                "The challenge has already been consumed or invalidated.");
+            return OtpChallengeErrors.AlreadyFinalized;
         }
 
         if (utcNow >= ExpiresAtUtc)
         {
-            throw new InvalidOperationException("Cannot consume an expired challenge.");
+            return OtpChallengeErrors.Expired;
         }
 
         ConsumedAtUtc = utcNow;
+        return Result.Success;
     }
 
     public void Invalidate(DateTime utcNow)

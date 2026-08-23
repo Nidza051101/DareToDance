@@ -1,6 +1,8 @@
 using DareToDance.Domain.Common;
 using DareToDance.Domain.OtpChallenge;
 using DareToDance.Domain.OtpChallenge.Id;
+using DareToDance.Domain.RefreshToken;
+using DareToDance.Domain.RefreshToken.Id;
 using DareToDance.Domain.User;
 using DareToDance.Domain.User.Id;
 using DareToDance.Infrastructure.Persistence.Converters;
@@ -15,7 +17,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<User> Users => Set<User>();
 
     public DbSet<OtpChallenge> OtpChallenges => Set<OtpChallenge>();
-    
+
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -31,6 +35,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         // and foreign keys alike — maps to uuid without per-config wiring.
         configurationBuilder.Properties<UserId>().HaveConversion<UserIdConverter>();
         configurationBuilder.Properties<OtpChallengeId>().HaveConversion<OtpChallengeIdConverter>();
+        configurationBuilder.Properties<RefreshTokenId>().HaveConversion<RefreshTokenIdConverter>();
 
         configurationBuilder.Properties<OtpPurpose>().HaveConversion<string>().HaveMaxLength(20);
     }

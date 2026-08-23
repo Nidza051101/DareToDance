@@ -1,5 +1,6 @@
 ﻿@host = http://localhost:5015
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMjk0ZDBmNy05YTM2LTQ2N2ItYmVhYS1mMjA1MTA1ZGFmMDMiLCJqdGkiOiIwMWEwMmVjOS04ODFiLTc1NjEtYjM3OS02M2NhMjgwY2VlMTEiLCJpYXQiOjE3ODc0OTEzNTQsImV4cCI6MTc4NzQ5NDk1NCwiaXNzIjoiRGFyZVRvRGFuY2UiLCJhdWQiOiJEYXJlVG9EYW5jZSJ9.FqmXoEP2Nd8sZVjDpSzeVHQ2UytXOvPUPW8iZGvK1sc
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMjk0ZDBmNy05YTM2LTQ2N2ItYmVhYS1mMjA1MTA1ZGFmMDMiLCJqdGkiOiIwMWEwMmYwMy1lMjA0LTdlNzctODEyZS1iMWJhZDE5N2E1MGEiLCJpYXQiOjE3ODc0OTUxNzgsImV4cCI6MTc4NzQ5NjA3OCwiaXNzIjoiRGFyZVRvRGFuY2UiLCJhdWQiOiJEYXJlVG9EYW5jZSJ9.0D1YFwUG1XWgH78Y-1d_vnwspTmQLF3Dkc2atTj9SzU
+@refreshToken = 01a02f03e1e47f88bc0d30076512f948.Tcukb05huFdEjS4ooW5tvmf1NH3OMOprWYAXdbdOS-M
 
 ### Request a login code — always 202 Accepted, byte-identical for unknown emails (anti-enumeration).
 ### In Development the code is printed in the api console: "DEV ONLY — OTP code for ..."
@@ -26,7 +27,7 @@ Content-Type: application/json
 
 {
   "email": "smoke@test.local",
-  "code": "193737"
+  "code": "467938"
 }
 
 
@@ -43,3 +44,22 @@ Content-Type: application/json
 ### Current identity — 200 with userId when the Bearer token is valid, 401 otherwise
 GET {{host}}/auth/me
 Authorization: Bearer {{accessToken}}
+
+
+### Rotate the session — 200 with a NEW access+refresh pair; the presented token is consumed.
+### Replaying a consumed token revokes the whole session family (reuse detection) — 401 Auth.InvalidToken.
+POST {{host}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+
+### Sign out — always 204, valid or not. A valid token revokes its whole session family.
+POST {{host}}/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}

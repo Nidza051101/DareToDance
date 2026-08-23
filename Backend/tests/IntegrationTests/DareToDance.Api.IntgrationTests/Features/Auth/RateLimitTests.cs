@@ -14,6 +14,8 @@ public sealed class TightRateLimitFactory : CustomWebApplicationFactory
 
         builder.UseSetting("RateLimitSettings:OtpRequestPermitLimit", "3");
         builder.UseSetting("RateLimitSettings:OtpRequestWindowMinutes", "15");
+        builder.UseSetting("RateLimitSettings:RefreshPermitLimit", "3");
+        builder.UseSetting("RateLimitSettings:RefreshWindowMinutes", "15");
     }
 }
 
@@ -35,6 +37,27 @@ public class RateLimitTests(TightRateLimitFactory factory) : IClassFixture<Tight
 
         var limited = await client.PostAsJsonAsync(
             "/auth/otp/request", new { email = "rate.limit@test.local" });
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, limited.StatusCode);
+        Assert.True(limited.Headers.Contains("Retry-After"));
+    }
+
+    [Fact]
+    public async Task RefreshesOverTheLimit_Get429WithRetryAfter()
+    {
+        var client = factory.CreateClient();
+
+        // The limiter sits in front of the handler, so junk tokens burn
+        // permits like real ones — exactly what brute-force protection needs.
+        for (var i = 0; i < 3; i++)
+        {
+            var attempt = await client.PostAsJsonAsync(
+                "/auth/refresh", new { refreshToken = "wrong-but-counts" });
+            Assert.Equal(HttpStatusCode.Unauthorized, attempt.StatusCode);
+        }
+
+        var limited = await client.PostAsJsonAsync(
+            "/auth/refresh", new { refreshToken = "wrong-but-counts" });
 
         Assert.Equal(HttpStatusCode.TooManyRequests, limited.StatusCode);
         Assert.True(limited.Headers.Contains("Retry-After"));

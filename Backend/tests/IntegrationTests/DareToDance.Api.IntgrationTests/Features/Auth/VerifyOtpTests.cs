@@ -12,7 +12,13 @@ public class VerifyOtpTests(CustomWebApplicationFactory factory) : IClassFixture
 {
     private readonly HttpClient _client = factory.CreateClient();
 
-    private sealed record AuthResponseDto(string AccessToken, string TokenType, DateTime ExpiresAtUtc, Guid UserId);
+    private sealed record AuthResponseDto(
+        string AccessToken,
+        string TokenType,
+        DateTime ExpiresAtUtc,
+        Guid UserId,
+        string RefreshToken,
+        DateTime RefreshTokenExpiresAtUtc);
 
     [Fact]
     public async Task CorrectCode_ReturnsToken_ThatOpensAuthorizedEndpoint_AndConsumesChallenge()
@@ -28,6 +34,10 @@ public class VerifyOtpTests(CustomWebApplicationFactory factory) : IClassFixture
         Assert.NotNull(auth);
         Assert.Equal("Bearer", auth.TokenType);
         Assert.Equal(user.Id.Value, auth.UserId);
+
+        // Login starts a session: a refresh token that outlives the JWT.
+        Assert.False(string.IsNullOrEmpty(auth.RefreshToken));
+        Assert.True(auth.RefreshTokenExpiresAtUtc > auth.ExpiresAtUtc);
 
         var meRequest = new HttpRequestMessage(HttpMethod.Get, "/auth/me");
         meRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", auth.AccessToken);
