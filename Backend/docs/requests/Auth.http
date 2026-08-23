@@ -1,0 +1,45 @@
+﻿@host = http://localhost:5015
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMjk0ZDBmNy05YTM2LTQ2N2ItYmVhYS1mMjA1MTA1ZGFmMDMiLCJqdGkiOiIwMWEwMmVjOS04ODFiLTc1NjEtYjM3OS02M2NhMjgwY2VlMTEiLCJpYXQiOjE3ODc0OTEzNTQsImV4cCI6MTc4NzQ5NDk1NCwiaXNzIjoiRGFyZVRvRGFuY2UiLCJhdWQiOiJEYXJlVG9EYW5jZSJ9.FqmXoEP2Nd8sZVjDpSzeVHQ2UytXOvPUPW8iZGvK1sc
+
+### Request a login code — always 202 Accepted, byte-identical for unknown emails (anti-enumeration).
+### In Development the code is printed in the api console: "DEV ONLY — OTP code for ..."
+POST {{host}}/auth/otp/request
+Content-Type: application/json
+
+{
+  "email": "smoke@test.local"
+}
+
+
+### Invalid email — 400 ValidationProblem
+POST {{host}}/auth/otp/request
+Content-Type: application/json
+
+{
+  "email": "not-an-email"
+}
+
+
+### Verify the code — 200 with accessToken; wrong/expired/replayed code — 401 Auth.InvalidCode
+POST {{host}}/auth/otp/verify
+Content-Type: application/json
+
+{
+  "email": "smoke@test.local",
+  "code": "193737"
+}
+
+
+### Malformed code — 400 ValidationProblem (rejected before it can burn an attempt)
+POST {{host}}/auth/otp/verify
+Content-Type: application/json
+
+{
+  "email": "smoke@test.local",
+  "code": "12ab"
+}
+
+
+### Current identity — 200 with userId when the Bearer token is valid, 401 otherwise
+GET {{host}}/auth/me
+Authorization: Bearer {{accessToken}}

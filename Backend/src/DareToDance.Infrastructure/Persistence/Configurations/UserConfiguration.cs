@@ -1,5 +1,4 @@
 using DareToDance.Domain.User;
-using DareToDance.Domain.User.Id;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,10 +11,7 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(u => u.Id);
 
         builder.Property(u => u.Id)
-            .ValueGeneratedNever()
-            .HasConversion(
-                id => id.Value,
-                value => UserId.Create(value));
+            .ValueGeneratedNever();
 
         builder.Property(u => u.FirstName)
             .HasMaxLength(100)
@@ -33,15 +29,7 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(30)
             .IsRequired();
 
-        builder.Property(u => u.CreatedAtUtc)
-            .IsRequired();
-
-        builder.Property(u => u.UpdatedAtUtc)
-            .IsRequired();
-
         builder.HasIndex(u => u.Email).IsUnique();
         builder.HasIndex(u => u.Phone).IsUnique();
-
-        builder.Ignore(u => u.DomainEvents);
     }
 }
