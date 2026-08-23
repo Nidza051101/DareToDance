@@ -1,4 +1,3 @@
-using DareToDance.Infrastructure.Options;
 using DareToDance.Infrastructure.Persistence;
 using DareToDance.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
@@ -20,11 +19,7 @@ public static class DependencyInjection
                 .UseNpgsql(configuration.GetConnectionString("Database"))
                 .UseSnakeCaseNamingConvention()
                 .AddInterceptors(serviceProvider.GetRequiredService<UpdateTimestampInterceptor>()));
-
-        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
-        services.Configure<OtpSettings>(configuration.GetSection(OtpSettings.SectionName));
         
-
         return services;
     }
 }
