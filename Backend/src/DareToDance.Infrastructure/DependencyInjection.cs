@@ -1,6 +1,6 @@
 using DareToDance.Infrastructure.Options;
 using DareToDance.Infrastructure.Persistence;
-using DareToDance.Infrastructure.Services;
+using DareToDance.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,20 +13,17 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddDbContext<AppDbContext>(options =>
+        services.AddSingleton<UpdateTimestampInterceptor>();
+
+        services.AddDbContext<AppDbContext>((serviceProvider, options) =>
             options
                 .UseNpgsql(configuration.GetConnectionString("Database"))
-                .UseSnakeCaseNamingConvention());
+                .UseSnakeCaseNamingConvention()
+                .AddInterceptors(serviceProvider.GetRequiredService<UpdateTimestampInterceptor>()));
 
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         services.Configure<OtpSettings>(configuration.GetSection(OtpSettings.SectionName));
-
-        services.AddSingleton<IPasswordHasher, PasswordHasher>();
-        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
-
-        // TODO: replace with real providers once the notification microservice is available.
-        services.AddSingleton<IEmailSender, ConsoleEmailSender>();
-        services.AddSingleton<ISmsSender, ConsoleSmsSender>();
+        
 
         return services;
     }
