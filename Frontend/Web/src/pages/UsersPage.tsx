@@ -1,12 +1,22 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import authService from '../services/auth.service'
 import userService, { type UserResponse } from '../services/user.service'
 import Navbar from '../components/Navbar'
 import '../App.css'
 
 function UsersPage() {
+  const [userId, setUserId] = useState<string | null>(null)
+
   const [lookupId, setLookupId] = useState('')
   const [lookupResult, setLookupResult] = useState<UserResponse | null>(null)
   const [lookupError, setLookupError] = useState<string | null>(null)
+
+  useEffect(() => {
+    authService
+      .getMe()
+      .then((response) => setUserId(response.data.userId))
+      .catch(() => setUserId(null))
+  }, [])
 
   const handleViewDetails = async () => {
     setLookupError(null)
@@ -24,6 +34,11 @@ function UsersPage() {
     <>
       <Navbar />
       <section id="center">
+        <div className="panel">
+          <h2>Your account</h2>
+          {userId && <p>ID: {userId}</p>}
+        </div>
+
         <div className="panel">
           <h2>Look up a user</h2>
           <input
