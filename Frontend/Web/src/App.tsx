@@ -11,6 +11,10 @@ function App() {
   const [lookupResult, setLookupResult] = useState<UserResponse | null>(null)
   const [lookupError, setLookupError] = useState<string | null>(null)
 
+  const [otpEmail, setOtpEmail] = useState('')
+  const [otpCode, setOtpCode] = useState('')
+  const [otpError, setOtpError] = useState<string | null>(null)
+
   useEffect(() => {
     authService
       .getMe()
@@ -22,6 +26,18 @@ function App() {
     await authService.logout()
     setUserId(null)
     setError('You are not logged in.')
+  }
+
+  const handleVerify = async () => {
+    setOtpError(null)
+
+    try {
+      const response = await authService.verifyOtp(otpEmail, otpCode)
+      setUserId(response.data.userId)
+      setError(null)
+    } catch {
+      setOtpError('Wrong or expired code.')
+    }
   }
 
   const handleViewDetails = async () => {
@@ -38,6 +54,24 @@ function App() {
 
   return (
     <section id="center">
+      <h2>Verify OTP code</h2>
+      <input
+        type="text"
+        value={otpEmail}
+        onChange={(e) => setOtpEmail(e.target.value)}
+        placeholder="Email"
+      />
+      <input
+        type="text"
+        value={otpCode}
+        onChange={(e) => setOtpCode(e.target.value)}
+        placeholder="6-digit code"
+      />
+      <button type="button" onClick={handleVerify}>
+        Verify
+      </button>
+      {otpError && <p>{otpError}</p>}
+
       <h1>Logged in user</h1>
       {userId && <p>ID: {userId}</p>}
       {error && <p>{error}</p>}
