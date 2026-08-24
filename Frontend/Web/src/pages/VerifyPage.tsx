@@ -84,7 +84,7 @@ function VerifyPage() {
               />
             ))}
           </div>
-          <button type="button" className="counter" onClick={handleVerify}>
+          <button type="button" className="btn" onClick={handleVerify}>
             Verify
           </button>
           {otpError && <p className="error-text">{otpError}</p>}

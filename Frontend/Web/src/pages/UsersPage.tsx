@@ -33,7 +33,7 @@ function UsersPage() {
             onChange={(e) => setLookupId(e.target.value)}
             placeholder="User ID"
           />
-          <button type="button" className="counter" onClick={handleViewDetails}>
+          <button type="button" className="btn" onClick={handleViewDetails}>
             View details
           </button>
 

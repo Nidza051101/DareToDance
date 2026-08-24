@@ -18,7 +18,7 @@ function Navbar() {
         <a href="/users.html">Users</a>
       </div>
       {isLoggedIn && (
-        <button type="button" className="counter" onClick={handleLogout}>
+        <button type="button" className="btn" onClick={handleLogout}>
           Log out
         </button>
       )}
