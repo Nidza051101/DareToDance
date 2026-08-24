@@ -17,6 +17,17 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddApiAuthentication(builder.Configuration);
     builder.Services.AddApiRateLimiting(builder.Configuration);
 
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("Frontend", policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+    });
+
     if (builder.Environment.IsDevelopment())
     {
         builder.Services.AddApiDocumentation();
@@ -39,6 +50,7 @@ var app = builder.Build();
     app.UseExceptionHandler();
     app.UseObservability();
     app.UseHttpsRedirection();
+    app.UseCors("Frontend");
     app.UseRateLimiter();
     app.UseAuthentication();
     app.UseAuthorization();
