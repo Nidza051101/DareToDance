@@ -13,11 +13,22 @@ function App() {
       .catch(() => setError('You are not logged in.'))
   }, [])
 
+  const handleLogout = async () => {
+    await authService.logout()
+    setUserId(null)
+    setError('You are not logged in.')
+  }
+
   return (
     <section id="center">
       <h1>Logged in user</h1>
       {userId && <p>ID: {userId}</p>}
       {error && <p>{error}</p>}
+      {userId && (
+        <button type="button" onClick={handleLogout}>
+          Log out
+        </button>
+      )}
     </section>
   )
 }
