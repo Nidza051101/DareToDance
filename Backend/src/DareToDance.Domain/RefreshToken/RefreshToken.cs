@@ -1,56 +1,110 @@
 using DareToDance.Domain.Common;
 using DareToDance.Domain.RefreshToken.Id;
 using DareToDance.Domain.User.Id;
+using ErrorOr;
 
 namespace DareToDance.Domain.RefreshToken;
 
-public sealed class RefreshToken : Entity<RefreshTokenId>
+public sealed class RefreshToken : AggregateRoot<RefreshTokenId>
 {
     public UserId UserId { get; private set; }
+
+    // Groups every rotation of one login into a session: reuse of any consumed
+    // member is treated as theft and revokes the whole family.
+    public Guid FamilyId { get; private set; }
+
     public string TokenHash { get; private set; }
-    public DateTime CreatedAtUtc { get; private set; }
     public DateTime ExpiresAtUtc { get; private set; }
+
+    // Hard cap stamped at login and copied to every successor, so a session
+    // can slide with use but never outlive the family's absolute lifetime.
+    public DateTime AbsoluteExpiresAtUtc { get; private set; }
+
+    public DateTime? ConsumedAtUtc { get; private set; }
     public DateTime? RevokedAtUtc { get; private set; }
 
-    public RefreshTokenId? ReplacedByTokenId { get; private set; }
+    // Audit pointer only — deliberately not a foreign key, so purging old
+    // rows never has to untangle a self-referencing chain.
+    public RefreshTokenId? ReplacedById { get; private set; }
 
     private RefreshToken(
         RefreshTokenId id,
         UserId userId,
+        Guid familyId,
         string tokenHash,
+        DateTime expiresAtUtc,
+        DateTime absoluteExpiresAtUtc,
+        DateTime? consumedAtUtc,
+        DateTime? revokedAtUtc,
+        RefreshTokenId? replacedById,
         DateTime createdAtUtc,
-        DateTime expiresAtUtc)
-        : base(id)
+        DateTime updatedAtUtc)
+        : base(id, createdAtUtc, updatedAtUtc)
     {
         UserId = userId;
+        FamilyId = familyId;
         TokenHash = tokenHash;
-        CreatedAtUtc = createdAtUtc;
         ExpiresAtUtc = expiresAtUtc;
+        AbsoluteExpiresAtUtc = absoluteExpiresAtUtc;
+        ConsumedAtUtc = consumedAtUtc;
+        RevokedAtUtc = revokedAtUtc;
+        ReplacedById = replacedById;
     }
 
-    public static RefreshToken Create(
+    public static ErrorOr<RefreshToken> Create(
+        RefreshTokenId id,
         UserId userId,
+        Guid familyId,
         string tokenHash,
         DateTime utcNow,
-        DateTime expiresAtUtc)
+        TimeSpan slidingLifetime,
+        DateTime absoluteExpiresAtUtc)
     {
+        if (string.IsNullOrWhiteSpace(tokenHash))
+        {
+            return RefreshTokenErrors.TokenHashRequired;
+        }
+
+        if (slidingLifetime <= TimeSpan.Zero)
+        {
+            return RefreshTokenErrors.SlidingLifetimeNotPositive;
+        }
+
+        if (absoluteExpiresAtUtc <= utcNow)
+        {
+            return RefreshTokenErrors.AbsoluteExpiryNotInFuture;
+        }
+
+        var slidingExpiresAtUtc = utcNow + slidingLifetime;
+
         return new RefreshToken(
-            RefreshTokenId.CreateUnique(),
+            id,
             userId,
+            familyId,
             tokenHash,
+            slidingExpiresAtUtc < absoluteExpiresAtUtc ? slidingExpiresAtUtc : absoluteExpiresAtUtc,
+            absoluteExpiresAtUtc,
+            consumedAtUtc: null,
+            revokedAtUtc: null,
+            replacedById: null,
             utcNow,
-            expiresAtUtc);
+            utcNow);
     }
 
-    public bool IsExpired(DateTime utcNow)
-        => utcNow >= ExpiresAtUtc;
-
-    public bool IsActive(DateTime utcNow)
-        => RevokedAtUtc is null && !IsExpired(utcNow);
-
-    public void Revoke(DateTime utcNow, RefreshTokenId? replacedByTokenId = null)
+    public ErrorOr<Success> Consume(DateTime utcNow, RefreshTokenId replacedById)
     {
-        RevokedAtUtc = utcNow;
-        ReplacedByTokenId = replacedByTokenId;
+        if (ConsumedAtUtc is not null || RevokedAtUtc is not null)
+        {
+            return RefreshTokenErrors.AlreadyFinalized;
+        }
+
+        if (utcNow >= ExpiresAtUtc)
+        {
+            return RefreshTokenErrors.Expired;
+        }
+
+        ConsumedAtUtc = utcNow;
+        ReplacedById = replacedById;
+        return Result.Success;
     }
 }

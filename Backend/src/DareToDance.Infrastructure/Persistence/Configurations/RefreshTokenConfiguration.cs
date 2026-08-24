@@ -1,6 +1,5 @@
 using DareToDance.Domain.RefreshToken;
-using DareToDance.Domain.RefreshToken.Id;
-using DareToDance.Domain.User.Id;
+using DareToDance.Domain.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,45 +9,33 @@ public sealed class RefreshTokenConfiguration : IEntityTypeConfiguration<Refresh
 {
     public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
-        builder.HasKey(rt => rt.Id);
+        builder.HasKey(t => t.Id);
 
-        builder.Property(rt => rt.Id)
-            .ValueGeneratedNever()
-            .HasConversion(
-                id => id.Value,
-                value => RefreshTokenId.Create(value));
+        builder.Property(t => t.Id)
+            .ValueGeneratedNever();
 
-        builder.Property(rt => rt.UserId)
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(t => t.UserId)
             .IsRequired()
-            .HasConversion(
-                id => id.Value,
-                value => UserId.Create(value));
+            .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(rt => rt.UserId)
-            .HasDatabaseName("ix_refresh_tokens_user_id");
-
-        builder.Property(rt => rt.TokenHash)
-            .HasMaxLength(200)
+        // SHA-256 digest as base64 is 44 chars; 64 leaves headroom.
+        builder.Property(t => t.TokenHash)
+            .HasMaxLength(64)
             .IsRequired();
 
-        // Hash je jedinstven - to nam je i glavna putanja za pretragu kad stigne refresh zahtev.
-        builder.HasIndex(rt => rt.TokenHash)
-            .IsUnique()
-            .HasDatabaseName("ix_refresh_tokens_token_hash");
+        // No partial unique index here, unlike otp_challenges: a user holds one
+        // live token per signed-in device, so several live rows are legal.
+        builder.HasIndex(t => t.UserId);
 
-        builder.Property(rt => rt.CreatedAtUtc)
-            .IsRequired();
+        // Reuse detection and logout revoke by family.
+        builder.HasIndex(t => t.FamilyId);
 
-        builder.Property(rt => rt.ExpiresAtUtc)
-            .IsRequired();
-
-        builder.Property(rt => rt.RevokedAtUtc);
-
-        builder.Property(rt => rt.ReplacedByTokenId)
-            .HasConversion(
-                id => ReferenceEquals(id, null) ? (Guid?)null : id.Value,
-                value => value != null ? RefreshTokenId.Create(value.Value) : null);
-
-        builder.Ignore(rt => rt.DomainEvents);
+        // Postgres xmin as optimistic concurrency token: two parallel refreshes
+        // of the same token must produce exactly one successor — the loser's
+        // SaveChanges fails instead of silently double-rotating.
+        builder.Property<uint>("xmin")
+            .IsRowVersion();
     }
 }

@@ -1,5 +1,6 @@
 using DareToDance.Infrastructure.Options;
 using DareToDance.Infrastructure.Persistence;
+using DareToDance.Infrastructure.Persistence.Interceptors;
 using DareToDance.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,24 +12,55 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        bool isDevelopment)
     {
-        services.AddDbContext<AppDbContext>(options =>
+        services.AddSingleton<UpdateTimestampInterceptor>();
+
+        services.AddDbContext<AppDbContext>((serviceProvider, options) =>
             options
                 .UseNpgsql(configuration.GetConnectionString("Database"))
-                .UseSnakeCaseNamingConvention());
+                .UseSnakeCaseNamingConvention()
+                .AddInterceptors(serviceProvider.GetRequiredService<UpdateTimestampInterceptor>()));
 
-        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
-        services.Configure<OtpSettings>(configuration.GetSection(OtpSettings.SectionName));
-        services.Configure<RefreshTokenSettings>(configuration.GetSection(RefreshTokenSettings.SectionName));
+        services.AddOptions<JwtSettings>()
+            .Bind(configuration.GetSection(JwtSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
-        services.AddSingleton<IPasswordHasher, PasswordHasher>();
-        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
-        services.AddSingleton<IRefreshTokenService, RefreshTokenService>();
+        services.AddOptions<OtpSettings>()
+            .Bind(configuration.GetSection(OtpSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
-        // TODO: replace with real providers once the notification microservice is available.
-        services.AddSingleton<IEmailSender, ConsoleEmailSender>();
-        services.AddSingleton<ISmsSender, ConsoleSmsSender>();
+        services.AddOptions<RefreshTokenSettings>()
+            .Bind(configuration.GetSection(RefreshTokenSettings.SectionName))
+            .ValidateDataAnnotations()
+            .Validate(
+                s => s.AbsoluteLifetimeDays >= s.SlidingLifetimeDays,
+                "RefreshTokenSettings:AbsoluteLifetimeDays must be greater than or equal to SlidingLifetimeDays.")
+            .ValidateOnStart();
+
+        services.AddSingleton(TimeProvider.System);
+
+        services.AddSingleton<IOtpGenerator, OtpGenerator>();
+        services.AddSingleton<IOtpCodeHasher, HmacOtpCodeHasher>();
+        services.AddSingleton<IRefreshTokenHasher, Sha256RefreshTokenHasher>();
+        services.AddSingleton<ITokenService, TokenService>();
+
+        if (isDevelopment)
+        {
+            services.AddSingleton<IOtpSender, ConsoleOtpSender>();
+        }
+        else
+        {
+            // Deliberate deployment block: ConsoleOtpSender prints plaintext codes
+            // and must never run outside Development. Boot fails here until a real
+            // sender (email/SMS) is implemented and registered for this branch.
+            throw new InvalidOperationException(
+                "No production OTP sender is configured. Implement a real IOtpSender " +
+                "and register it for non-Development environments.");
+        }
 
         return services;
     }

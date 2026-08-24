@@ -13,8 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddProblemDetails();
     builder.Services.AddControllers();
     builder.Services.AddPresentation();
-    builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
     builder.Services.AddApiAuthentication(builder.Configuration);
+    builder.Services.AddApiRateLimiting(builder.Configuration);
 
     if (builder.Environment.IsDevelopment())
     {
@@ -30,9 +31,15 @@ var app = builder.Build();
         app.UseApiDocumentation();
     }
 
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseHsts();
+    }
+
     app.UseExceptionHandler();
     app.UseObservability();
     app.UseHttpsRedirection();
+    app.UseRateLimiter();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();

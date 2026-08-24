@@ -13,6 +13,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "requests", "requests", "{14194BD0-0108-4540-AC92-084CACEED67A}"
 	ProjectSection(SolutionItems) = preProject
 		docs\requests\CreateUser.http = docs\requests\CreateUser.http
+		docs\requests\Auth.http = docs\requests\Auth.http
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DareToDance.Infrastructure", "src\DareToDance.Infrastructure\DareToDance.Infrastructure.csproj", "{8E3DC1BA-2584-4884-957E-7D7590A0A01A}"
