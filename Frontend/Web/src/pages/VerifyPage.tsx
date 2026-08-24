@@ -58,7 +58,7 @@ function VerifyPage() {
       <Navbar />
       <section id="center">
         <div className="panel">
-          <h2>Verify OTP code</h2>
+          <h2>Verify code</h2>
           <input
             type="text"
             className="field"
