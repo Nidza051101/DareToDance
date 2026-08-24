@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react'
 import authService from './services/auth.service'
+import userService, { type UserResponse } from './services/user.service'
 import './App.css'
 
 function App() {
   const [userId, setUserId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  const [lookupId, setLookupId] = useState('')
+  const [lookupResult, setLookupResult] = useState<UserResponse | null>(null)
+  const [lookupError, setLookupError] = useState<string | null>(null)
 
   useEffect(() => {
     authService
@@ -19,6 +24,18 @@ function App() {
     setError('You are not logged in.')
   }
 
+  const handleViewDetails = async () => {
+    setLookupError(null)
+    setLookupResult(null)
+
+    try {
+      const response = await userService.getUserById(lookupId)
+      setLookupResult(response.data)
+    } catch {
+      setLookupError('User not found.')
+    }
+  }
+
   return (
     <section id="center">
       <h1>Logged in user</h1>
@@ -28,6 +45,27 @@ function App() {
         <button type="button" onClick={handleLogout}>
           Log out
         </button>
+      )}
+
+      <h2>Look up a user</h2>
+      <input
+        type="text"
+        value={lookupId}
+        onChange={(e) => setLookupId(e.target.value)}
+        placeholder="User ID"
+      />
+      <button type="button" onClick={handleViewDetails}>
+        View details
+      </button>
+
+      {lookupError && <p>{lookupError}</p>}
+      {lookupResult && (
+        <ul>
+          <li>Email: {lookupResult.email}</li>
+          <li>First name: {lookupResult.firstName}</li>
+          <li>Last name: {lookupResult.lastName}</li>
+          <li>Phone: {lookupResult.phone ?? '—'}</li>
+        </ul>
       )}
     </section>
   )
