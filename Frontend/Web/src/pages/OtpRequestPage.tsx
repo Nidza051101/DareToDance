@@ -70,10 +70,14 @@ export default function OtpRequestPage() {
                 },
             });
 
+            // GIS renders a fixed-pixel-width button (no percentage support),
+            // so match it to the actual container width instead of a magic
+            // number - keeps it aligned with the "Request OTP" button above.
             window.google.accounts.id.renderButton(googleButtonRef.current, {
                 theme: 'outline',
                 size: 'large',
                 text: 'continue_with',
+                width: googleButtonRef.current.offsetWidth,
             });
 
             return true;
@@ -128,7 +132,11 @@ export default function OtpRequestPage() {
                         {loading ? 'Sending...' : 'Request OTP'}
                     </button>
 
-                    <div ref={googleButtonRef}></div>
+                    <div className="divider">
+                        <span>or</span>
+                    </div>
+
+                    <div className="google-button" ref={googleButtonRef}></div>
                 </div>
             </section>
         </>

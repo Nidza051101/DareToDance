@@ -15,7 +15,7 @@ declare global {
           }): void;
           renderButton(
             parent: HTMLElement,
-            options: { theme?: string; size?: string; text?: string },
+            options: { theme?: string; size?: string; text?: string; width?: number },
           ): void;
         };
       };

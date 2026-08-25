@@ -1,3 +1,25 @@
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+  font-size: 13px;
+  margin: 4px 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+}
+
+.google-button {
+  display: flex;
+  justify-content: center;
+}
+
 .btn {
   font: inherit;
   font-weight: 600;

@@ -2,8 +2,38 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
+  padding: 12px 24px;
   border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logo {
+  height: 42px;
+  width: 42px;
+  border-radius: 9px;
+  display: block;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.06);
+  box-shadow: var(--shadow);
 }
 
 .navbar-links {
@@ -24,4 +54,38 @@
 .navbar-links a.active {
   color: var(--accent);
   font-weight: 700;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--code-bg);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    border-color 0.2s;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.08);
+  border-color: var(--accent-border);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
