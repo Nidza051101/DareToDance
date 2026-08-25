@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import authService from '../services/auth.service'
+import AuthService from '../services/AuthService'
 import './Navbar.css'
 
 function isActivePage(fileName: string) {
@@ -16,7 +16,8 @@ function Navbar() {
   const [isLoggedIn] = useState(() => Boolean(localStorage.getItem('accessToken')))
 
   const handleLogout = async () => {
-    await authService.logout()
+    const refreshToken = localStorage.getItem('refreshToken') ?? ''
+    await AuthService.logout(refreshToken)
     window.location.href = '/index.html'
   }
 
@@ -27,7 +28,7 @@ function Navbar() {
           Home
         </a>
         <a href="/index.html" className={isActivePage('index.html') ? 'active' : undefined}>
-          Verify
+          Login
         </a>
         <a href="/users.html" className={isActivePage('users.html') ? 'active' : undefined}>
           Users
