@@ -1,10 +1,11 @@
 ﻿using DareToDance.Api.Features.Auth.Shared;
+using DareToDance.Infrastructure.Options;
 using DareToDance.Infrastructure.Persistence;
 using DareToDance.Infrastructure.Services;
 using ErrorOr;
-using Google.Apis.Auth;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace DareToDance.Api.Features.Auth.Commands.GoogleLogin;
 
@@ -14,14 +15,29 @@ public static class GoogleLogin
 
     public sealed class Handler(
         AppDbContext dbContext,
-        ITokenService tokenService)
+        ITokenService tokenService,
+        IOptions<GoogleAuthSettings> googleOptions,
+        IGoogleTokenValidator googleTokenValidator)
         : IRequestHandler<Command, ErrorOr<AuthResult>>
     {
         public async Task<ErrorOr<AuthResult>> Handle(
             Command command,
             CancellationToken cancellationToken)
         {
-            var payload = await GoogleJsonWebSignature.ValidateAsync(command.IdToken);
+            var settings = googleOptions.Value;
+
+            GoogleTokenPayload payload;
+
+            try
+            {
+                payload = await googleTokenValidator.ValidateAsync(
+                    command.IdToken,
+                    settings.ClientId);
+            }
+            catch (Exception)
+            {
+                return Error.Validation("Token.Invalid", "Invalid Google token.");
+            }
 
             var user = await dbContext.Users
                 .AsNoTracking()
