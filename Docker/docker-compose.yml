@@ -11,6 +11,7 @@ services:
       # Local dev/testing via docker-compose only - in production these should come from a real secret (e.g. a secrets manager).
       JwtSettings__Secret: dev-only-local-jwt-signing-secret-do-not-use-in-production-1234567890
       OtpSettings__Pepper: dev-only-local-otp-pepper-do-not-use-in-production-1234567890
+      GoogleAuth__ClientId: dev-only-placeholder-client-id
     ports:
       - "5015:8080"
     depends_on:
