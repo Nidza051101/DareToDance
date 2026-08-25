@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import authService from '../services/auth.service'
+import AuthService from '../services/AuthService'
 import userService, { type UserResponse } from '../services/user.service'
 import Navbar from '../components/Navbar'
 import '../App.css'
@@ -12,9 +12,8 @@ function UsersPage() {
   const [lookupError, setLookupError] = useState<string | null>(null)
 
   useEffect(() => {
-    authService
-      .getMe()
-      .then((response) => setUserId(response.data.userId))
+    AuthService.getMe()
+      .then((response) => setUserId(response.userId))
       .catch(() => setUserId(null))
   }, [])
 

@@ -1,7 +1,7 @@
 services:
   api:
     build:
-      context: .
+      context: ../Backend
       dockerfile: Dockerfile
     container_name: daretodance-api
     environment:
@@ -37,6 +37,17 @@ services:
       start_period: 10s
     restart: unless-stopped
 
+  web:
+    build:
+      context: ../Frontend/Web
+      dockerfile: Dockerfile
+    container_name: daretodance-web
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
   aspire-dashboard:
     image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
     container_name: daretodance-aspire-dashboard
@@ -49,3 +60,5 @@ services:
 
 volumes:
   postgres-data:
+    name: backend_postgres-data
+    external: true
