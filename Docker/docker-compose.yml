@@ -1,7 +1,7 @@
 services:
   api:
     build:
-      context: .
+      context: ../Backend
       dockerfile: Dockerfile
     container_name: daretodance-api
     environment:
@@ -60,3 +60,5 @@ services:
 
 volumes:
   postgres-data:
+    name: backend_postgres-data
+    external: true
