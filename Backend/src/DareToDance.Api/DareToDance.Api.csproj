@@ -37,7 +37,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\Auth\" />
       <Folder Include="Features\Users\Commands\" />
       <Folder Include="Features\Users\Queries\" />
     </ItemGroup>
