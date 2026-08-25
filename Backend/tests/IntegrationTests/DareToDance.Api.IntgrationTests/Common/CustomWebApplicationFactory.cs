@@ -40,6 +40,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         builder.UseSetting("JwtSettings:Audience", "DareToDance.Tests");
         builder.UseSetting("OtpSettings:Pepper", "test-pepper-0123456789abcdef0123456789abcdef");
 
+        builder.UseSetting("GoogleAuth:ClientId", "test-google-client-id");
+
         // OTP timings pinned so the tests don't silently break when the
         // product values in appsettings are tuned. The test classes assume
         // exactly these numbers.
