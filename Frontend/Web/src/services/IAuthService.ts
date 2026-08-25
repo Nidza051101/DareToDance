@@ -6,4 +6,5 @@ export interface IAuthService {
   getMe(): Promise<{ userId: string }>;
   refresh(refreshToken: string): Promise<AuthResultDto>;
   logout(refreshToken: string): Promise<void>;
+  googleLogin(idToken: string): Promise<AuthResultDto>;
 }
