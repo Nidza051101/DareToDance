@@ -1,6 +1,7 @@
 import axios from 'axios';
 import api from './api';
 import { type AuthResultDto } from '../types/AuthResultDto';
+import { type GoogleAuthResultDto } from '../types/GoogleAuthResultDto';
 import { type GoogleIdentityDto } from '../types/GoogleIdentityDto';
 import { type GoogleLoginResult } from '../types/GoogleLoginResult';
 import { type IAuthService } from './IAuthService';
@@ -35,10 +36,6 @@ class AuthService implements IAuthService {
         localStorage.clear();
     }
 
-    // 404 means "token is valid, no account for this email yet" - a real,
-    // expected outcome for this endpoint, not a failure - so it's returned
-    // as data (needsRegistration), never thrown. Any other non-2xx (e.g. a
-    // bad/expired Google token, 401) is left to throw for the caller.
     async loginWithGoogle(idToken: string): Promise<GoogleLoginResult> {
         try {
             const response = await api.post('auth/google', { idToken });
@@ -55,6 +52,13 @@ class AuthService implements IAuthService {
 
             throw err;
         }
+    }
+
+    async completeRegistration(idToken: string, phone: string): Promise<GoogleAuthResultDto> {
+        const response = await api.post('auth/google/complete-registration', { idToken, phone });
+        localStorage.setItem('accessToken', response.data.accessToken);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+        return response.data;
     }
 }
 
