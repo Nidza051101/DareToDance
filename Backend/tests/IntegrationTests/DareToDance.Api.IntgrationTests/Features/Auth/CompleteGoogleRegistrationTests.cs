@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DareToDance.Api.IntgrationTests.Features.Auth;
 
+[Collection("Integration Tests")]
 public class CompleteGoogleRegistrationTests(CustomWebApplicationFactory factory)
-    : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
 

@@ -8,7 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DareToDance.Api.IntgrationTests.Features.Auth;
 
-public class RefreshTests(CustomWebApplicationFactory factory) : IClassFixture<CustomWebApplicationFactory>
+[Collection("Integration Tests")]
+public class RefreshTests(CustomWebApplicationFactory factory)
 {
     private readonly HttpClient _client = factory.CreateClient();
 

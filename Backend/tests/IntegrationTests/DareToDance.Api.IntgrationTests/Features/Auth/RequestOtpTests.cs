@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DareToDance.Api.IntgrationTests.Features.Auth;
 
-public class RequestOtpTests(CustomWebApplicationFactory factory) : IClassFixture<CustomWebApplicationFactory>
+[Collection("Integration Tests")]
+public class RequestOtpTests(CustomWebApplicationFactory factory)
 {
     private readonly HttpClient _client = factory.CreateClient();
 
