@@ -2,9 +2,11 @@ using DareToDance.Infrastructure.Options;
 using DareToDance.Infrastructure.Persistence;
 using DareToDance.Infrastructure.Persistence.Interceptors;
 using DareToDance.Infrastructure.Services;
+using DareToDance.Notifications.Grpc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace DareToDance.Infrastructure;
 
@@ -46,6 +48,20 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddOptions<NotificationServiceSettings>()
+            .Bind(configuration.GetSection(NotificationServiceSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        // Typed gRPC klijent — adresa se čita tek pri prvom pozivu (lazy),
+        // pa ValidateOnStart iznad hvata prazan/loš config pre toga.
+        services.AddGrpcClient<NotificationService.NotificationServiceClient>(
+            (serviceProvider, options) =>
+            {
+                var settings = serviceProvider.GetRequiredService<IOptions<NotificationServiceSettings>>().Value;
+                options.Address = new Uri(settings.GrpcAddress);
+            });
+
         services.AddSingleton(TimeProvider.System);
 
         services.AddSingleton<IOtpGenerator, OtpGenerator>();
@@ -61,12 +77,15 @@ public static class DependencyInjection
         }
         else
         {
-            // Deliberate deployment block: ConsoleOtpSender prints plaintext codes
-            // and must never run outside Development. Boot fails here until a real
-            // sender (email/SMS) is implemented and registered for this branch.
-            throw new InvalidOperationException(
-                "No production OTP sender is configured. Implement a real IOtpSender " +
-                "and register it for non-Development environments.");
+            // ConsoleOtpSender prints plaintext codes and must never run outside
+            // Development — GrpcOtpSender (v. Services/GrpcOtpSender.cs) je prava
+            // implementacija, poziva Notification servis preko gRPC-a.
+            services.AddScoped<IOtpSender, GrpcOtpSender>();
+
+            // NAMERNO NEDIRANO — IGoogleTokenVerifier i dalje nema registraciju
+            // van Development. To je postojeći, odvojen gap (PlaceholderGoogleTokenVerifier
+            // nije prava implementacija, isto kao ConsoleOtpSender pre ove izmene) —
+            // van obima ove sesije (Notification/gRPC), ne rešava se ovde.
         }
 
         return services;
