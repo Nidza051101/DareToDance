@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option csharp_namespace = "DareToDance.Notifications.Grpc";
+
+package notification;
+
+// Jedini ugovor između D2D Backend-a (klijent) i Notification servisa (server).
+// Referenciše se iz oba .csproj-a — v. NotificationService.Grpc.csproj i
+// (kasnije) Backend/src/DareToDance.Infrastructure/DareToDance.Infrastructure.csproj.
+service NotificationService {
+  // D2D Backend zove ovo; server ga upisuje u red i odmah vraća potvrdu —
+  // ne čeka da je poruka (mejl/SMS/push) stvarno isporučena.
+  rpc SendNotification (SendNotificationRequest) returns (SendNotificationResponse);
+}
+
+message SendNotificationRequest {
+  string recipient = 1;               // email, broj telefona, push token...
+  Channel channel = 2;
+  string template = 3;                // npr. "OtpCode", "WelcomeEmail"
+  map<string, string> variables = 4;  // popunjava šablon, npr. { "code": "123456" }
+}
+
+message SendNotificationResponse {
+  bool accepted = 1;
+  string tracking_id = 2;             // za kasniju proveru statusa, ne isporuku samu
+}
+
+enum Channel {
+  EMAIL = 0;
+  SMS = 1;
+  PUSH = 2;
+}

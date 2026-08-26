@@ -1,8 +1,11 @@
 services:
   api:
     build:
-      context: ../Backend
-      dockerfile: Dockerfile
+      # context pomeren na koren repoa da bi Backend/Dockerfile mogao da
+      # vidi deljeni proto/ folder pored Backend/. V. artifact "Notification
+      # gRPC Flow", deo 5.
+      context: ..
+      dockerfile: Backend/Dockerfile
     container_name: daretodance-api
     environment:
       ASPNETCORE_ENVIRONMENT: Development
@@ -17,6 +20,22 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    restart: unless-stopped
+
+  notification:
+    build:
+      context: ..
+      dockerfile: NotificationService/Dockerfile
+    container_name: daretodance-notification
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      # Isto kao gore: dev-only placeholder. Prava Gmail App Password ide
+      # preko GitHub Actions Secrets u produkciji, nikad ovde. V. artifact
+      # "Notification gRPC Flow", deo 4.
+      EmailSettings__GmailAddress: dev-only-placeholder@gmail.com
+      EmailSettings__AppPassword: dev-only-placeholder-app-password
+    ports:
+      - "5017:8080"
     restart: unless-stopped
 
   postgres:
