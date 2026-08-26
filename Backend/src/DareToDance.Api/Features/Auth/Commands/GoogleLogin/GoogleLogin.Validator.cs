@@ -1,13 +1,12 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace DareToDance.Api.Features.Auth.Commands.GoogleLogin;
 
-public sealed class GoogleLoginValidator : AbstractValidator<GoogleLoginRequest>
+public sealed class GoogleLoginCommandValidator : AbstractValidator<GoogleLogin.Command>
 {
-    public GoogleLoginValidator()
+    public GoogleLoginCommandValidator()
     {
         RuleFor(x => x.IdToken)
-            .NotEmpty()
-            .WithMessage("Google ID token is required.");
+            .NotEmpty();
     }
 }

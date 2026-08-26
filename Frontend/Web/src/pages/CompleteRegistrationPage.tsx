@@ -1,57 +1,69 @@
-import { useState } from 'react';
-import Navbar from '../components/Navbar';
-import '../App.css';
+import { useState } from 'react'
+import AuthService from '../services/AuthService'
+import Navbar from '../components/Navbar'
+import '../App.css'
+
+function getParamsFromUrl() {
+  const params = new URLSearchParams(window.location.search)
+  return {
+    idToken: params.get('idToken') ?? '',
+    email: params.get('email') ?? '',
+    firstName: params.get('firstName') ?? '',
+    lastName: params.get('lastName') ?? '',
+  }
+}
 
 export default function CompleteRegistrationPage() {
-    const [phone, setPhone] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+  const [{ idToken, email, firstName, lastName }] = useState(getParamsFromUrl)
+  const [phone, setPhone] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
-    const handleSubmit = async () => {
-        setError('');
+  const handleComplete = async () => {
+    setError(null)
 
-        if (!phone.trim()) {
-            setError('Phone is required.');
-            return;
-        }
+    if (!phone.trim()) {
+      setError('Phone is required.')
+      return
+    }
 
-        try {
-            setLoading(true);
-            // ovdje ide poziv servisa
-        } catch (error) {
-            console.error(error);
-            setError('Unable to complete registration. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
+    try {
+      setLoading(true)
+      await AuthService.completeRegistration(idToken, phone.trim())
+      window.location.href = '/home.html'
+    } catch {
+      setError('Unable to complete registration. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
-    return (
-        <>
-            <Navbar />
-            <section id="center">
-                <div className="panel">
-                    <h2>Complete Registration</h2>
-                    <p>Enter your phone number to complete registration.</p>
-                    <input
-                        type="tel"
-                        className="field"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="Enter your phone number"
-                        disabled={loading}
-                    />
-                    {error && <p className="error-text" role="alert">{error}</p>}
-                    <button
-                        type="button"
-                        className="btn"
-                        onClick={handleSubmit}
-                        disabled={loading}
-                    >
-                        {loading ? 'Saving...' : 'Complete Registration'}
-                    </button>
-                </div>
-            </section>
-        </>
-    );
+  return (
+    <>
+      <Navbar />
+      <section id="center">
+        <div className="panel">
+          <h2>Complete registration</h2>
+          <p>
+            {firstName} {lastName} ({email})
+          </p>
+
+          <input
+            type="tel"
+            className="field"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Phone number"
+            disabled={loading}
+          />
+
+          <button type="button" className="btn" onClick={handleComplete} disabled={loading}>
+            {loading ? 'Creating account...' : 'Complete registration'}
+          </button>
+
+          {error && <p className="error-text">{error}</p>}
+        </div>
+      </section>
+    </>
+  )
 }

@@ -4,7 +4,8 @@ using DareToDance.Api.IntgrationTests.Common;
 
 namespace DareToDance.Api.IntgrationTests.Features.Auth;
 
-public class LogoutTests(CustomWebApplicationFactory factory) : IClassFixture<CustomWebApplicationFactory>
+[Collection("Integration Tests")]
+public class LogoutTests(CustomWebApplicationFactory factory)
 {
     private readonly HttpClient _client = factory.CreateClient();
 

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
 
-namespace DareToDance.Infrastructure.Options
+namespace DareToDance.Infrastructure.Options;
+
+public sealed class GoogleAuthSettings
 {
-    public class GoogleAuthSettings
-    {
-        public string ClientId { get; set; } = string.Empty;
-        public string ClientSecret { get; set; } = string.Empty;
+    public const string SectionName = "GoogleAuth";
 
-    }
+    [Required]
+    public string ClientId { get; init; } = string.Empty;
 }

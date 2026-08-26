@@ -41,6 +41,11 @@ public static class DependencyInjection
                 "RefreshTokenSettings:AbsoluteLifetimeDays must be greater than or equal to SlidingLifetimeDays.")
             .ValidateOnStart();
 
+        services.AddOptions<GoogleAuthSettings>()
+            .Bind(configuration.GetSection(GoogleAuthSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         services.AddSingleton(TimeProvider.System);
 
         services.AddSingleton<IOtpGenerator, OtpGenerator>();
@@ -51,6 +56,8 @@ public static class DependencyInjection
         if (isDevelopment)
         {
             services.AddSingleton<IOtpSender, ConsoleOtpSender>();
+
+            services.AddSingleton<IGoogleTokenVerifier, PlaceholderGoogleTokenVerifier>();
         }
         else
         {

@@ -12,6 +12,7 @@ export default defineConfig({
         verify: resolve(import.meta.dirname, 'verify.html'),
         home: resolve(import.meta.dirname, 'home.html'),
         users: resolve(import.meta.dirname, 'users.html'),
+        completeRegistration: resolve(import.meta.dirname, 'complete-registration.html'),
       },
     },
   },
