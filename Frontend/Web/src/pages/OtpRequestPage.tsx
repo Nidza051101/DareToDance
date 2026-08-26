@@ -123,14 +123,16 @@ export default function OtpRequestPage() {
                         </p>
                     )}
 
-                    <button
-                        type="button"
-                        className="btn"
-                        onClick={handleRequestOtp}
-                        disabled={loading}
-                    >
-                        {loading ? 'Sending...' : 'Request OTP'}
-                    </button>
+                    {email.trim() && (
+                        <button
+                            type="button"
+                            className="btn"
+                            onClick={handleRequestOtp}
+                            disabled={loading}
+                        >
+                            {loading ? 'Sending...' : 'Log in'}
+                        </button>
+                    )}
 
                     <div className="divider">
                         <span>or</span>

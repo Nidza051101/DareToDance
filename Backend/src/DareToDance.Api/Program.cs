@@ -1,5 +1,7 @@
 using DareToDance.Api.Common.Extensions;
 using DareToDance.Infrastructure;
+using DareToDance.Infrastructure.Options;
+using DareToDance.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -16,14 +18,18 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
     builder.Services.AddApiAuthentication(builder.Configuration);
     builder.Services.AddApiRateLimiting(builder.Configuration);
+    builder.Services.AddScoped<IGoogleTokenValidator, GoogleTokenValidator>();
+
+    builder.Services.Configure<GoogleAuthSettings>(
+    builder.Configuration.GetSection("GoogleAuth"));
 
     builder.Services.AddCors(options =>
     {
-
         options.AddPolicy("Frontend", policy => policy
             .WithOrigins("http://localhost:5173")
             .AllowAnyHeader()
-            .AllowAnyMethod());
+            .AllowAnyMethod()
+            .AllowCredentials());
     });
 
     if (builder.Environment.IsDevelopment())
