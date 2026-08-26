@@ -26,6 +26,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
     // against JwtBearer's real-clock lifetime validation.
     public FakeTimeProvider Time { get; } = new(DateTimeOffset.UtcNow);
 
+    public FakeGoogleTokenValidator GoogleTokenValidator { get; } = new();
+
+    
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         // Development keeps ApplyMigrations() running inside the factory —
@@ -68,6 +72,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
             // instance, so a plain Add would append rather than replace.
             services.RemoveAll<TimeProvider>();
             services.AddSingleton<TimeProvider>(Time);
+            services.RemoveAll<IGoogleTokenValidator>();
+            services.AddSingleton<IGoogleTokenValidator>(GoogleTokenValidator);
         });
     }
 

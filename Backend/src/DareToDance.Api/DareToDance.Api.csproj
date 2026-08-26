@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <!-- MediatR 12.5.0 = poslednja Apache-2.0 verzija; od v13 traži license key -->
+      <PackageReference Include="Google.Apis.Auth" Version="1.76.0" />
       <PackageReference Include="MediatR" Version="14.2.0" />
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
@@ -36,7 +37,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\Auth\" />
       <Folder Include="Features\Users\Commands\" />
       <Folder Include="Features\Users\Queries\" />
     </ItemGroup>

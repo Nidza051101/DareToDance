@@ -8,9 +8,9 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Database: Host=postgres;Port=5432;Database=daretodance;Username=daretodance;Password=daretodance;Include Error Detail=true
       OTEL_EXPORTER_OTLP_ENDPOINT: http://aspire-dashboard:18889
-      # Local dev/testing via docker-compose only - in production these should come from a real secret (e.g. a secrets manager).
       JwtSettings__Secret: dev-only-local-jwt-signing-secret-do-not-use-in-production-1234567890
       OtpSettings__Pepper: dev-only-local-otp-pepper-do-not-use-in-production-1234567890
+      GoogleAuth__ClientId: "861559944635-o2kuqqtnr3qv92ggkjhp8108k78olkkh.apps.googleusercontent.com"
     ports:
       - "5015:8080"
     depends_on:
@@ -30,7 +30,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -h 127.0.0.1 -U daretodance -d daretodance" ]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U daretodance -d daretodance"]
       interval: 5s
       timeout: 5s
       retries: 10

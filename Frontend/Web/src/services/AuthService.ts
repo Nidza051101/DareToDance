@@ -31,6 +31,13 @@ class AuthService implements IAuthService {
         await api.post('auth/logout', { refreshToken });
         localStorage.clear();
     }
+
+    async googleLogin(idToken: string): Promise<AuthResultDto> {
+    const response = await api.post('auth/google-login', { idToken });
+    localStorage.setItem('accessToken', response.data.accessToken);
+    localStorage.setItem('refreshToken', response.data.refreshToken);
+    return response.data;
+    }
 }
 
 export default new AuthService();
