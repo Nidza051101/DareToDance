@@ -24,11 +24,17 @@ public sealed class GoogleLoginEndpoint : AuthEndpointBase
         return result.Match<IActionResult>(
             outcome => outcome switch
             {
-                GoogleLogin.LoggedIn loggedIn => Ok(loggedIn.Result.ToResponse()),
+                GoogleLogin.LoggedIn loggedIn => HandleLoggedIn(loggedIn),
                 GoogleLogin.AccountNotFound notFound => NotFound(
                     new GoogleAccountNotFoundResponse(notFound.Email, notFound.FirstName, notFound.LastName)),
                 _ => Problem(),
             },
             Problem);
+    }
+
+    private IActionResult HandleLoggedIn(GoogleLogin.LoggedIn loggedIn)
+    {
+        SetRefreshTokenCookie(loggedIn.Result.RefreshToken, loggedIn.Result.RefreshTokenExpiresAtUtc);
+        return Ok(loggedIn.Result.ToResponse());
     }
 }
