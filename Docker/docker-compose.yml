@@ -1,9 +1,6 @@
 services:
   api:
     build:
-      # context pomeren na koren repoa da bi Backend/Dockerfile mogao da
-      # vidi deljeni proto/ folder pored Backend/. V. artifact "Notification
-      # gRPC Flow", deo 5.
       context: ..
       dockerfile: Backend/Dockerfile
     container_name: daretodance-api
@@ -11,7 +8,6 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Database: Host=postgres;Port=5432;Database=daretodance;Username=daretodance;Password=daretodance;Include Error Detail=true
       OTEL_EXPORTER_OTLP_ENDPOINT: http://aspire-dashboard:18889
-      # Local dev/testing via docker-compose only - in production these should come from a real secret (e.g. a secrets manager).
       JwtSettings__Secret: dev-only-local-jwt-signing-secret-do-not-use-in-production-1234567890
       OtpSettings__Pepper: dev-only-local-otp-pepper-do-not-use-in-production-1234567890
       GoogleAuth__ClientId: dev-only-placeholder-client-id
@@ -30,9 +26,6 @@ services:
     container_name: daretodance-notification
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      # Isto kao gore: dev-only placeholder. Prava Gmail App Password ide
-      # preko GitHub Actions Secrets u produkciji, nikad ovde. V. artifact
-      # "Notification gRPC Flow", deo 4.
       EmailSettings__GmailAddress: dev-only-placeholder@gmail.com
       EmailSettings__AppPassword: dev-only-placeholder-app-password
     ports:
