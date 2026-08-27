@@ -51,10 +51,29 @@ public static class RetryFailedNotifications
     }
 }
 
-public sealed class RetryFailedNotificationsJob : BackgroundService
+public sealed class RetryFailedNotificationsJob(
+    IServiceScopeFactory scopeFactory,
+    IOptions<RetryPolicySettings> retryOptions,
+    ILogger<RetryFailedNotificationsJob> logger) : BackgroundService
 {
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return Task.CompletedTask;
+        var interval = TimeSpan.FromMinutes(retryOptions.Value.IntervalMinutes);
+        using var timer = new PeriodicTimer(interval);
+
+        while (await timer.WaitForNextTickAsync(stoppingToken))
+        {
+            using var scope = scopeFactory.CreateScope();
+            var sender = scope.ServiceProvider.GetRequiredService<ISender>();
+
+            try
+            {
+                await sender.Send(new RetryFailedNotifications.Command(), stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "RetryFailedNotificationsTickFailed");
+            }
+        }
     }
 }
