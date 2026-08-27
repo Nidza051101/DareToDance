@@ -21,7 +21,11 @@ public sealed class RefreshEndpoint : AuthEndpointBase
         var result = await Sender.Send(new Refresh.Command(request.RefreshToken), cancellationToken);
 
         return result.Match<IActionResult>(
-            auth => Ok(auth.ToResponse()),
+            auth =>
+            {
+                SetRefreshTokenCookie(auth.RefreshToken, auth.RefreshTokenExpiresAtUtc);
+                return Ok(auth.ToResponse());
+            },
             Problem);
     }
 }
