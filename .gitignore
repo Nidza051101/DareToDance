@@ -69,3 +69,5 @@ desktop.ini
 *.swp
 *.tmp
 *~
+
+docker-compose.override.yml

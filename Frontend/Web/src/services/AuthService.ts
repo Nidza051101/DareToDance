@@ -5,6 +5,7 @@ import { type GoogleAuthResultDto } from '../types/GoogleAuthResultDto';
 import { type GoogleIdentityDto } from '../types/GoogleIdentityDto';
 import { type GoogleLoginResult } from '../types/GoogleLoginResult';
 import { type IAuthService } from './IAuthService';
+import { setAccessToken } from './authToken';
 
 class AuthService implements IAuthService {
 
@@ -15,8 +16,7 @@ class AuthService implements IAuthService {
 
     async verifyOtp(email: string, code: string): Promise<AuthResultDto> {
         const response = await api.post('auth/otp/verify', { email, code });
-        localStorage.setItem('accessToken',response.data.accessToken);
-        localStorage.setItem('refreshToken',response.data.refreshToken);
+        setAccessToken(response.data.accessToken);
         return response.data;
     }
 
@@ -39,8 +39,7 @@ class AuthService implements IAuthService {
     async loginWithGoogle(idToken: string): Promise<GoogleLoginResult> {
         try {
             const response = await api.post('auth/google', { idToken });
-            localStorage.setItem('accessToken', response.data.accessToken);
-            localStorage.setItem('refreshToken', response.data.refreshToken);
+            setAccessToken(response.data.accessToken);
             return { status: 'loggedIn', auth: response.data };
         } catch (err) {
             if (axios.isAxiosError(err) && err.response?.status === 404) {
@@ -56,8 +55,7 @@ class AuthService implements IAuthService {
 
     async completeRegistration(idToken: string, phone: string): Promise<GoogleAuthResultDto> {
         const response = await api.post('auth/google/complete-registration', { idToken, phone });
-        localStorage.setItem('accessToken', response.data.accessToken);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
+        setAccessToken(response.data.accessToken);
         return response.data;
     }
 }

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getAccessToken, setAccessToken } from './authToken';
 
 const api = axios.create({
     baseURL: 'http://localhost:5015',
@@ -6,7 +7,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = getAccessToken();
 
     if(token)
     {
@@ -25,14 +26,12 @@ api.interceptors.response.use(
         original._retry = true;
 
         try {
-            const refreshToken = localStorage.getItem('refreshToken');
-            const response = await api.post('/auth/refresh', { refreshToken });
+            const response = await api.post('/auth/refresh');
             const data = response.data;
-            localStorage.setItem('accessToken', data.accessToken);
+            setAccessToken(data.accessToken);
             original.headers.Authorization = `Bearer ${data.accessToken}`;
             return api(original);
         } catch (err) {
-            localStorage.clear();
             window.location.href = '/index.html';
             return Promise.reject(err);
         }
