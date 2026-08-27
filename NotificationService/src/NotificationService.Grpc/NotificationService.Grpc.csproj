@@ -8,9 +8,12 @@
 
   <ItemGroup>
     <!-- Deljeni ugovor sa D2D Backend-om — jedan fizički fajl na koren repoa,
-         v. proto/notification.proto. GrpcServices="Server" jer je ovaj projekat
-         primalac poziva; D2D Backend će isti fajl referencirati sa "Client". -->
-    <Protobuf Include="..\..\..\proto\notification.proto" GrpcServices="Server" Link="Protos\notification.proto" />
+         v. proto/notification.proto. "Both", ne samo "Server": D2D Backend
+         generiše svoj klijent nezavisno, ali integracioni testovi za OVAJ
+         servis referenciraju direktno ovaj projekat, pa im treba i klijent
+         stub generisan ovde — tako ga ne generišu ponovo sami, što bi
+         pravilo duple, sudarajuće tipove poruka. -->
+    <Protobuf Include="..\..\..\proto\notification.proto" GrpcServices="Both" Link="Protos\notification.proto" />
   </ItemGroup>
 
   <ItemGroup>
