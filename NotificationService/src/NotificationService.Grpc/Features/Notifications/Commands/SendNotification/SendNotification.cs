@@ -18,9 +18,6 @@ public static class SendNotification
 
     public sealed record Result(Guid TrackingId);
 
-    // NotificationDbContext je registrovan sa PRIVREMENIM EF Core InMemory
-    // provajderom (v. Infrastructure/DependencyInjection.cs) — radi već sada,
-    // ali podaci ne prežive restart procesa dok se ne izabere pravi (MySQL?).
     public sealed class Handler(
         NotificationDbContext dbContext,
         IMessageQueue messageQueue,
@@ -33,7 +30,7 @@ public static class SendNotification
             var utcNow = timeProvider.GetUtcNow().UtcDateTime;
 
             var recordResult = NotificationRecordEntity.Create(
-                command.Recipient, command.Channel, command.Template, utcNow);
+                command.Recipient, command.Channel, command.Template, command.Variables, utcNow);
 
             if (recordResult.IsError)
             {
@@ -45,8 +42,6 @@ public static class SendNotification
             dbContext.NotificationRecords.Add(record);
             await dbContext.SaveChangesAsync(cancellationToken);
 
-            // Upisano tek posle uspešnog SaveChanges — isti princip kao kod
-            // RequestOtp u D2D Backend-u: šalji tek nakon commit-a.
             await messageQueue.EnqueueAsync(
                 new QueuedNotification(
                     record.Id, command.Recipient, command.Channel, command.Template, command.Variables),
