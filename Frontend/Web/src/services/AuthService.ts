@@ -5,7 +5,7 @@ import { type GoogleAuthResultDto } from '../types/GoogleAuthResultDto';
 import { type GoogleIdentityDto } from '../types/GoogleIdentityDto';
 import { type GoogleLoginResult } from '../types/GoogleLoginResult';
 import { type IAuthService } from './IAuthService';
-import { setAccessToken } from './authToken';
+import { clearAccessToken, setAccessToken } from './authToken';
 
 class AuthService implements IAuthService {
 
@@ -31,9 +31,10 @@ class AuthService implements IAuthService {
         return response.data;
     }
 
-    async logout(refreshToken: string): Promise<void> {
-        await api.post('auth/logout', { refreshToken });
-        localStorage.clear();
+    async logout(): Promise<void> {
+        // Bez tela zahteva — backend čita refreshToken iz HttpOnly kolačića.
+        await api.post('auth/logout');
+        clearAccessToken();
     }
 
     async loginWithGoogle(idToken: string): Promise<GoogleLoginResult> {
