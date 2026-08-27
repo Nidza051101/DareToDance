@@ -1,0 +1,18 @@
+# Build context za api/notification je sada koren repoa (Docker/docker-compose.yml:
+# context: ..) — Backend/.dockerignore više ne važi za taj context (Docker
+# čita .dockerignore samo iz build-context root-a), pa je ovaj fajl njegova
+# zamena na novom nivou. V. artifact "Notification gRPC Flow", deo 5.
+**/bin/
+**/obj/
+.git/
+.idea/
+.vs/
+.claude/
+**/node_modules/
+**/dist/
+Backend/docs/
+Backend/tests/
+Backend/Dockerfile
+NotificationService/Dockerfile
+Docker/docker-compose.yml
+Frontend/
