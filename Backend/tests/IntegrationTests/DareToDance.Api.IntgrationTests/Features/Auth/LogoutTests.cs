@@ -101,8 +101,13 @@ public class LogoutTests(CustomWebApplicationFactory factory)
         return auth;
     }
 
+    // Isti razlog kao u RefreshTests.cs — endpoint sad čita iz kolačića.
     private Task<HttpResponseMessage> RefreshAsync(string refreshToken)
-        => _client.PostAsJsonAsync("/auth/refresh", new { refreshToken });
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "/auth/refresh");
+        request.Headers.Add("Cookie", $"refreshToken={refreshToken}");
+        return _client.SendAsync(request);
+    }
 
     private Task<HttpResponseMessage> LogoutAsync(string refreshToken)
         => _client.PostAsJsonAsync("/auth/logout", new { refreshToken });
