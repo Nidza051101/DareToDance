@@ -16,6 +16,7 @@ public abstract class AuthEndpointBase : ApiEndpointBase
             Secure = true,
             SameSite = SameSiteMode.Strict,
             Expires = expiresAtUtc,
+            Path = "/",
         });
     }
 }
