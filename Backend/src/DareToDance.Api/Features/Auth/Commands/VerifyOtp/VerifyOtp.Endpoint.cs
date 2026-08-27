@@ -21,7 +21,11 @@ public sealed class VerifyOtpEndpoint : AuthEndpointBase
         var result = await Sender.Send(new VerifyOtp.Command(request.Email, request.Code), cancellationToken);
 
         return result.Match<IActionResult>(
-            auth => Ok(auth.ToResponse()),
+            auth =>
+            {
+                SetRefreshTokenCookie(auth.RefreshToken, auth.RefreshTokenExpiresAtUtc);
+                return Ok(auth.ToResponse());
+            },
             Problem);
     }
 }

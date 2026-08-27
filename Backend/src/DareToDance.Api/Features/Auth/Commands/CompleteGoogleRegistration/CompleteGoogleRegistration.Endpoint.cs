@@ -23,7 +23,11 @@ public sealed class CompleteGoogleRegistrationEndpoint : AuthEndpointBase
             cancellationToken);
 
         return result.Match<IActionResult>(
-            auth => Ok(auth.ToResponse()),
+            auth =>
+            {
+                SetRefreshTokenCookie(auth.RefreshToken, auth.RefreshTokenExpiresAtUtc);
+                return Ok(auth.ToResponse());
+            },
             Problem);
     }
 }

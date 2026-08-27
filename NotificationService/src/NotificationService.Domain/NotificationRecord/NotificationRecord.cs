@@ -13,6 +13,13 @@ public sealed class NotificationRecord
     public string Recipient { get; }
     public NotificationChannel Channel { get; }
     public string Template { get; }
+
+    // Sadržaj koji ide u šablon (npr. OTP kod, vreme isteka) — mora da se
+    // sačuva ovde, ne samo prosledi u red, jer RetryFailedNotifications
+    // ponovo šalje BAŠ ovaj zapis kasnije, kad poruka više nije u redu.
+    // Bez ovoga bi retry poslao mejl sa praznim {{code}} mestom.
+    public IReadOnlyDictionary<string, string> Variables { get; }
+
     public NotificationStatus Status { get; private set; }
     public DateTime CreatedAtUtc { get; }
     public DateTime? SentAtUtc { get; private set; }
@@ -24,12 +31,14 @@ public sealed class NotificationRecord
         string recipient,
         NotificationChannel channel,
         string template,
+        IReadOnlyDictionary<string, string> variables,
         DateTime createdAtUtc)
     {
         Id = id;
         Recipient = recipient;
         Channel = channel;
         Template = template;
+        Variables = variables;
         Status = NotificationStatus.Pending;
         CreatedAtUtc = createdAtUtc;
         RetryCount = 0;
@@ -39,6 +48,7 @@ public sealed class NotificationRecord
         string recipient,
         NotificationChannel channel,
         string template,
+        IReadOnlyDictionary<string, string> variables,
         DateTime utcNow)
     {
         if (string.IsNullOrWhiteSpace(recipient))
@@ -51,7 +61,7 @@ public sealed class NotificationRecord
             return NotificationRecordErrors.TemplateRequired;
         }
 
-        return new NotificationRecord(Guid.CreateVersion7(), recipient, channel, template, utcNow);
+        return new NotificationRecord(Guid.CreateVersion7(), recipient, channel, template, variables, utcNow);
     }
 
     // Poziva Worker/Handler pošto kanal (npr. Gmail) potvrdi isporuku.

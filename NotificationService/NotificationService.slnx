@@ -4,4 +4,7 @@
     <Project Path="src/NotificationService.Grpc/NotificationService.Grpc.csproj" />
     <Project Path="src/NotificationService.Infrastructure/NotificationService.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/IntegrationTests/NotificationService.Grpc.IntegrationTests/NotificationService.Grpc.IntegrationTests.csproj" />
+  </Folder>
 </Solution>

@@ -24,6 +24,12 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services
+            .AddOptions<RetryPolicySettings>()
+            .Bind(configuration.GetSection(RetryPolicySettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         services.AddScoped<IEmailSender, GmailEmailSender>();
 
         // Isti Channel deli i pisanje (IMessageQueue) i čitanje (Reader u

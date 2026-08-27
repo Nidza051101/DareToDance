@@ -215,6 +215,13 @@ public class RefreshTests(CustomWebApplicationFactory factory)
         return (user, auth);
     }
 
+    // Endpoint sad čita iz kolačića, ne iz JSON tela — v. Refresh.Endpoint.cs.
+    // Ostalih 9 testova u ovom fajlu ostaje netaknuto: svi prolaze kroz ovu
+    // jednu funkciju, pa je ovo jedino mesto koje je moralo da se promeni.
     private Task<HttpResponseMessage> RefreshAsync(string refreshToken)
-        => _client.PostAsJsonAsync("/auth/refresh", new { refreshToken });
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "/auth/refresh");
+        request.Headers.Add("Cookie", $"refreshToken={refreshToken}");
+        return _client.SendAsync(request);
+    }
 }

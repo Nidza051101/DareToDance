@@ -51,15 +51,21 @@ public class RateLimitTests(TightRateLimitFactory factory) : IClassFixture<Tight
         // permits like real ones — exactly what brute-force protection needs.
         for (var i = 0; i < 3; i++)
         {
-            var attempt = await client.PostAsJsonAsync(
-                "/auth/refresh", new { refreshToken = "wrong-but-counts" });
+            var attempt = await RefreshAsync(client, "wrong-but-counts");
             Assert.Equal(HttpStatusCode.Unauthorized, attempt.StatusCode);
         }
 
-        var limited = await client.PostAsJsonAsync(
-            "/auth/refresh", new { refreshToken = "wrong-but-counts" });
+        var limited = await RefreshAsync(client, "wrong-but-counts");
 
         Assert.Equal(HttpStatusCode.TooManyRequests, limited.StatusCode);
         Assert.True(limited.Headers.Contains("Retry-After"));
+    }
+
+    // Endpoint sad čita iz kolačića, ne iz JSON tela — v. Refresh.Endpoint.cs.
+    private static Task<HttpResponseMessage> RefreshAsync(HttpClient client, string refreshToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "/auth/refresh");
+        request.Headers.Add("Cookie", $"refreshToken={refreshToken}");
+        return client.SendAsync(request);
     }
 }
