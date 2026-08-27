@@ -1,19 +1,60 @@
+using ErrorOr;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using NotificationService.Domain.NotificationRecord;
+using NotificationService.Infrastructure.MessageQueue;
+using NotificationService.Infrastructure.Options;
+using NotificationService.Infrastructure.Persistence;
+
 namespace NotificationService.Grpc.Features.Notifications.Commands.RetryFailedNotifications;
 
-// Skelet za "Failed Notification Scheduled Job" sa artifact-a — namerno
-// nedovršen. Otvorene odluke pre implementacije (v. artifact, notes):
-//   - interval čitanja (npr. svakih 5 min?)
-//   - max broj pokušaja pre trajnog odustajanja (NotificationRecord.RetryCount
-//     već postoji za ovo)
-//   - backoff između pokušaja, da se Gmail ne "bombarduje" istim zahtevom
-// Kad se ovo reši: pročitati NotificationRecords sa Status == Failed i
-// RetryCount < max iz NotificationDbContext, pozvati record.ResetForRetry(),
-// i ponovo ih ubaciti u IMessageQueue — isti put kao SendNotification.Handler.
+public static class RetryFailedNotifications
+{
+    public sealed record Command : IRequest<ErrorOr<Success>>;
+
+    public sealed class Handler(
+        NotificationDbContext dbContext,
+        IMessageQueue messageQueue,
+        IOptions<RetryPolicySettings> retryOptions,
+        ILogger<Handler> logger) : IRequestHandler<Command, ErrorOr<Success>>
+    {
+        public async Task<ErrorOr<Success>> Handle(Command command, CancellationToken cancellationToken)
+        {
+            var maxAttempts = retryOptions.Value.MaxAttempts;
+
+            var candidates = await dbContext.NotificationRecords
+                .Where(r => r.Status == NotificationStatus.Failed && r.RetryCount < maxAttempts)
+                .ToListAsync(cancellationToken);
+
+            foreach (var record in candidates)
+            {
+                record.ResetForRetry();
+
+                await messageQueue.EnqueueAsync(
+                    new QueuedNotification(
+                        record.Id, record.Recipient, record.Channel, record.Template, record.Variables),
+                    cancellationToken);
+
+                logger.LogInformation(
+                    "NotificationRequeued {NotificationRecordId} (failed {RetryCount} of {MaxAttempts} times)",
+                    record.Id, record.RetryCount, maxAttempts);
+            }
+
+            if (candidates.Count > 0)
+            {
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+
+            return Result.Success;
+        }
+    }
+}
+
 public sealed class RetryFailedNotificationsJob : BackgroundService
 {
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        // TODO: implementirati periodičnu proveru — v. napomenu iznad.
         return Task.CompletedTask;
     }
 }
