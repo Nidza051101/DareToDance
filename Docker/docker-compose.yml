@@ -10,7 +10,7 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://aspire-dashboard:18889
       JwtSettings__Secret: dev-only-local-jwt-signing-secret-do-not-use-in-production-1234567890
       OtpSettings__Pepper: dev-only-local-otp-pepper-do-not-use-in-production-1234567890
-      GoogleAuth__ClientId: dev-only-placeholder-client-id
+      GoogleAuth__ClientId: 861559944635-o2kuqqtnr3qv92ggkjhp8108k78olkkh.apps.googleusercontent.com
       NotificationService__GrpcAddress: http://notification:8080
     ports:
       - "5015:8080"

@@ -82,10 +82,11 @@ public static class DependencyInjection
             // implementacija, poziva Notification servis preko gRPC-a.
             services.AddScoped<IOtpSender, GrpcOtpSender>();
 
-            // NAMERNO NEDIRANO — IGoogleTokenVerifier i dalje nema registraciju
-            // van Development. To je postojeći, odvojen gap (PlaceholderGoogleTokenVerifier
-            // nije prava implementacija, isto kao ConsoleOtpSender pre ove izmene) —
-            // van obima ove sesije (Notification/gRPC), ne rešava se ovde.
+            // Prava provera Google ID tokena (potpis + issuer + audience) —
+            // PlaceholderGoogleTokenVerifier iznad ne proverava potpis i sme
+            // samo u Development. Bez ove registracije /auth/google puca sa 500
+            // (Unable to resolve IGoogleTokenVerifier) van Development-a.
+            services.AddSingleton<IGoogleTokenVerifier, GoogleTokenVerifier>();
         }
 
         return services;
