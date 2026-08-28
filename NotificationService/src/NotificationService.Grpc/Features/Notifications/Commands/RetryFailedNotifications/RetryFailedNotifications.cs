@@ -33,7 +33,8 @@ public static class RetryFailedNotifications
 
                 await messageQueue.EnqueueAsync(
                     new QueuedNotification(
-                        record.Id, record.Recipient, record.Channel, record.Template, record.Variables),
+                        record.Id, record.Recipient, record.Channel, record.Template,
+                        new Dictionary<string, string>(record.Variables)),
                     cancellationToken);
 
                 logger.LogInformation(
