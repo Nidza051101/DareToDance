@@ -13,9 +13,6 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services, IConfiguration configuration)
     {
-        // Isti obrazac kao DareToDance.Infrastructure.DependencyInjection u
-        // D2D Backend-u — TimeProvider.System, ne DateTime.UtcNow direktno,
-        // da handleri ostanu testabilni (fake TimeProvider u testovima).
         services.AddSingleton(TimeProvider.System);
 
         services
@@ -32,14 +29,9 @@ public static class DependencyInjection
 
         services.AddScoped<IEmailSender, GmailEmailSender>();
 
-        // Isti Channel deli i pisanje (IMessageQueue) i čitanje (Reader u
-        // NotificationQueueConsumer) — mora biti singleton.
         services.AddSingleton<InMemoryMessageQueue>();
         services.AddSingleton<IMessageQueue>(sp => sp.GetRequiredService<InMemoryMessageQueue>());
 
-        // EF Core InMemory provajder — odluka admina da baza za testiranje
-        // ostane privremena (v. napomenu na dnu NotificationDbContext.cs).
-        // Podaci ne prežive restart procesa; to je namerno, ne propust.
         services.AddDbContext<NotificationDbContext>(options =>
             options.UseInMemoryDatabase("notifications"));
 

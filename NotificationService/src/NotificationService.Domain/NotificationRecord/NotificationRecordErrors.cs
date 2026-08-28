@@ -2,9 +2,6 @@ using ErrorOr;
 
 namespace NotificationService.Domain.NotificationRecord;
 
-// Sve Unexpected namerno: handler validira ulaz pre poziva Create, pa okinut
-// guard znači bug u pozivaocu, ne poslovni ishod — isti obrazac kao
-// DareToDance.Domain.OtpChallenge.OtpChallengeErrors u D2D Backend-u.
 public static class NotificationRecordErrors
 {
     public static readonly Error RecipientRequired = Error.Unexpected(

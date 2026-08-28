@@ -14,10 +14,6 @@ public sealed class NotificationRecord
     public NotificationChannel Channel { get; }
     public string Template { get; }
 
-    // Sadržaj koji ide u šablon (npr. OTP kod, vreme isteka) — mora da se
-    // sačuva ovde, ne samo prosledi u red, jer RetryFailedNotifications
-    // ponovo šalje BAŠ ovaj zapis kasnije, kad poruka više nije u redu.
-    // Bez ovoga bi retry poslao mejl sa praznim {{code}} mestom.
     public IReadOnlyDictionary<string, string> Variables { get; }
 
     public NotificationStatus Status { get; private set; }

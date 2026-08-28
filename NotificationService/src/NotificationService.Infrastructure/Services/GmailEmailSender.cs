@@ -7,10 +7,6 @@ using NotificationService.Infrastructure.Options;
 
 namespace NotificationService.Infrastructure.Services;
 
-// Prava implementacija (ne DEV-ONLY stub kao ConsoleOtpSender u D2D Backend-u) —
-// ovo je najprioritetniji deo servisa. Koristi App Password, ne OAuth2; v.
-// artifact "Notification gRPC Flow" za obrazloženje i limite (~500 mejlova/dan
-// na ličnom Gmail nalogu) i kada zameniti pravim provajderom (SendGrid/SES).
 public sealed class GmailEmailSender(
     IOptions<EmailSettings> emailOptions,
     ILogger<GmailEmailSender> logger) : IEmailSender
@@ -40,8 +36,6 @@ public sealed class GmailEmailSender(
         }
         catch (Exception ex)
         {
-            // Handler odlučuje šta dalje (MarkFailed + retry) — ovde se samo
-            // loguje i propagira, nikad se ne guta greška ćutke.
             logger.LogWarning(ex, "EmailSendFailed to {Recipient}", message.Recipient);
             throw;
         }

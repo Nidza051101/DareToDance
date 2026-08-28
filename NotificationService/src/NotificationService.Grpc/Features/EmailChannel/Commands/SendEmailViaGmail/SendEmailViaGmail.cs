@@ -14,8 +14,7 @@ public static class SendEmailViaGmail
         string Template,
         IReadOnlyDictionary<string, string> Variables) : IRequest<ErrorOr<Success>>;
 
-    // NotificationDbContext je registrovan sa PRIVREMENIM EF Core InMemory
-    // provajderom — v. SendNotification.cs za isto obrazloženje.
+    
     public sealed class Handler(
         IEmailSender emailSender,
         NotificationDbContext dbContext,
