@@ -31,6 +31,8 @@ public static class DependencyInjection
             .AddOptions<RabbitMqSettings>()
             .Bind(configuration.GetSection(RabbitMqSettings.SectionName));
 
+        services.AddSingleton<RabbitMqConnection>();
+
         services.AddScoped<IEmailSender, GmailEmailSender>();
 
         services.AddSingleton<InMemoryMessageQueue>();
