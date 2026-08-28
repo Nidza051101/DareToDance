@@ -29,7 +29,9 @@ public static class DependencyInjection
 
         services
             .AddOptions<RabbitMqSettings>()
-            .Bind(configuration.GetSection(RabbitMqSettings.SectionName));
+            .Bind(configuration.GetSection(RabbitMqSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services.AddSingleton<RabbitMqConnection>();
 

@@ -28,8 +28,14 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       EmailSettings__GmailAddress: dev-only-placeholder@gmail.com
       EmailSettings__AppPassword: dev-only-placeholder-app-password
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Username: daretodance
+      RabbitMq__Password: daretodance
     ports:
       - "5017:8080"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     restart: unless-stopped
 
   postgres:
@@ -49,6 +55,25 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: daretodance-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: daretodance
+      RABBITMQ_DEFAULT_PASS: daretodance
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
     restart: unless-stopped
 
   web:
@@ -76,3 +101,4 @@ volumes:
   postgres-data:
     name: backend_postgres-data
     external: true
+  rabbitmq-data:
