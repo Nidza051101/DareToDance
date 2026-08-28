@@ -41,6 +41,9 @@ public static class DependencyInjection
         services.AddDbContext<NotificationDbContext>(options =>
             options.UseInMemoryDatabase("notifications"));
 
+        services.AddNotificationPublisher();
+        services.AddNotificationConsumer();
+
         return services;
     }
 }
