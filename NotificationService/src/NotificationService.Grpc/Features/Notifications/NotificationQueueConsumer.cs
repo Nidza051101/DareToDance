@@ -13,12 +13,17 @@ public sealed class NotificationQueueConsumer(
     IServiceScopeFactory scopeFactory,
     ILogger<NotificationQueueConsumer> logger) : BackgroundService
 {
+    private const ushort PrefetchCount = 10;
+
     private IChannel? _channel;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _channel = await connection.CreateChannelAsync(stoppingToken);
         await RabbitMqTopology.DeclareAsync(_channel, stoppingToken);
+        await _channel.BasicQosAsync(
+            prefetchSize: 0, prefetchCount: PrefetchCount, global: false,
+            cancellationToken: stoppingToken);
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
         consumer.ReceivedAsync += OnMessageAsync;
