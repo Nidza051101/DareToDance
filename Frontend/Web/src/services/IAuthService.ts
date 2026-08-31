@@ -7,7 +7,7 @@ export interface IAuthService {
   verifyOtp(email: string, code: string): Promise<AuthResultDto>;
   getMe(): Promise<{ userId: string }>;
   refresh(refreshToken: string): Promise<AuthResultDto>;
-  logout(refreshToken: string): Promise<void>;
+  logout(): Promise<void>;
   loginWithGoogle(idToken: string): Promise<GoogleLoginResult>;
   completeRegistration(idToken: string, phone: string): Promise<GoogleAuthResultDto>;
 }

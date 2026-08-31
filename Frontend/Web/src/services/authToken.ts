@@ -1,11 +1,14 @@
-let accessToken: string | null = null;
+// accessToken u localStorage; refreshToken se NIGDE ne čuva na frontend
+// strani — živi samo u HttpOnly kolačiću koji backend postavlja i JS ga
+// nikad ne dodiruje. V. artifact "Token Storage Security".
+const STORAGE_KEY = 'accessToken';
 
-export const getAccessToken = () => accessToken;
+export const getAccessToken = () => localStorage.getItem(STORAGE_KEY);
 
 export const setAccessToken = (token: string) => {
-    accessToken = token;
+    localStorage.setItem(STORAGE_KEY, token);
 };
 
 export const clearAccessToken = () => {
-    accessToken = null;
+    localStorage.removeItem(STORAGE_KEY);
 };

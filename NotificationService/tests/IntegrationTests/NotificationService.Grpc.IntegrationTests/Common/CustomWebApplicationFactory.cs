@@ -20,6 +20,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         builder.UseSetting("EmailSettings:GmailAddress", "test@example.com");
         builder.UseSetting("EmailSettings:AppPassword", "test-app-password");
 
+        builder.UseSetting("RabbitMq:Host", "localhost");
+        builder.UseSetting("RabbitMq:Username", "guest");
+        builder.UseSetting("RabbitMq:Password", "guest");
+
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<DbContextOptions<NotificationDbContext>>();

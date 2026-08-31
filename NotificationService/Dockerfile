@@ -1,6 +1,3 @@
-# Build context je koren repoa (v. Docker/docker-compose.yml: context: ..)
-# — mora da vidi proto/ pored NotificationService/, isti razlog kao izmena
-# u Backend/Dockerfile. V. artifact "Notification gRPC Flow", deo 5.
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 

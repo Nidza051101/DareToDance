@@ -4,9 +4,6 @@ using MediatR;
 
 namespace NotificationService.Grpc.Common.Behaviors;
 
-// Isti obrazac kao DareToDance.Api.Common.Behaviors.ValidationBehavior u D2D
-// Backend-u — kopirano namerno, ne deljeno preko project reference-a, jer su
-// ovo dva nezavisna deployment-a (v. artifact "Notification gRPC Flow", deo 6).
 public sealed class ValidationBehavior<TRequest, TResponse>(IValidator<TRequest>? validator = null)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>

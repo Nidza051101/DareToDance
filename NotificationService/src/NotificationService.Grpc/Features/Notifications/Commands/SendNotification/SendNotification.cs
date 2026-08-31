@@ -44,7 +44,8 @@ public static class SendNotification
 
             await messageQueue.EnqueueAsync(
                 new QueuedNotification(
-                    record.Id, command.Recipient, command.Channel, command.Template, command.Variables),
+                    record.Id, command.Recipient, command.Channel, command.Template,
+                    new Dictionary<string, string>(command.Variables)),
                 cancellationToken);
 
             logger.LogInformation(

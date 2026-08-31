@@ -18,8 +18,6 @@ var app = builder.Build();
 {
     app.MapGrpcService<SendNotificationGrpcService>();
 
-    // gRPC servisi ne odgovaraju na obične HTTP GET pozive — ovo je samo
-    // orijentaciona poruka za nekog ko otvori adresu u browseru.
     app.MapGet("/", () =>
         "NotificationService.Grpc — komunikacija ide preko gRPC klijenta, ne browsera.");
 

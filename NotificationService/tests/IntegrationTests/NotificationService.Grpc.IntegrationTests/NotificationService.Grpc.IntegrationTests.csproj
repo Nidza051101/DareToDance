@@ -8,10 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- Klijent stub (NotificationServiceClient) dolazi već generisan iz
-             NotificationService.Grpc (v. GrpcServices="Both" tamo) preko
-             ProjectReference ispod — ne generiše se ovde ponovo, da ne dobijemo
-             dva ista tipa poruke koja se sudaraju. -->
         <PackageReference Include="Grpc.Net.Client" Version="2.64.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.11" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import AuthService from '../services/AuthService'
+import { getAccessToken } from '../services/authToken'
 import logo from '../assets/logo.png'
 import { getStoredTheme, getSystemTheme, setTheme, type Theme } from '../theme'
 import './Navbar.css'
@@ -15,12 +16,13 @@ function isActivePage(fileName: string) {
 }
 
 function Navbar() {
-  const [isLoggedIn] = useState(() => Boolean(localStorage.getItem('accessToken')))
+  const [isLoggedIn] = useState(() => Boolean(getAccessToken()))
   const [theme, setThemeState] = useState<Theme>(() => getStoredTheme() ?? getSystemTheme())
 
   const handleLogout = async () => {
-    const refreshToken = localStorage.getItem('refreshToken') ?? ''
-    await AuthService.logout(refreshToken)
+    // refreshToken se ne šalje odavde — backend ga sam pokupi iz HttpOnly
+    // kolačića (browser ga automatski priloži jer je withCredentials: true).
+    await AuthService.logout()
     window.location.href = '/index.html'
   }
 
