@@ -25,7 +25,7 @@ public sealed class NotificationQueueConsumer(
 
         await _channel.BasicConsumeAsync(
             queue: RabbitMqTopology.EmailQueue,
-            autoAck: true,
+            autoAck: false,
             consumer: consumer,
             cancellationToken: stoppingToken);
 
@@ -49,12 +49,14 @@ public sealed class NotificationQueueConsumer(
         catch (JsonException ex)
         {
             logger.LogError(ex, "NotificationDeserializeFailed");
+            await _channel!.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
             return;
         }
 
         if (msg is null)
         {
             logger.LogError("NotificationDeserializedNull");
+            await _channel!.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
             return;
         }
 
@@ -77,10 +79,13 @@ public sealed class NotificationQueueConsumer(
                         msg.Channel, msg.NotificationRecordId);
                     break;
             }
+
+            await _channel!.BasicAckAsync(ea.DeliveryTag, multiple: false);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "NotificationProcessingFailed {NotificationRecordId}", msg.NotificationRecordId);
+            await _channel!.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
         }
     }
 }
