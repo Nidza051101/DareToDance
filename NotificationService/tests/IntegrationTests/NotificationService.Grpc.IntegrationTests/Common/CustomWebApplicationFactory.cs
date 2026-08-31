@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
+using NotificationService.Infrastructure.MessageQueue;
 using NotificationService.Infrastructure.Persistence;
 using NotificationRecordEntity = NotificationService.Domain.NotificationRecord.NotificationRecord;
 
@@ -31,8 +32,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 options.UseInMemoryDatabase(_databaseName));
 
             services.RemoveAll<IHostedService>();
+            services.RemoveAll<IMessageQueue>();
+            services.AddSingleton<IMessageQueue, InMemoryMessageQueue>();
         });
     }
+
     public GrpcChannel CreateGrpcChannel()
     {
         var httpClient = CreateDefaultClient(new ResponseVersionHandler());
@@ -42,12 +46,14 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             HttpClient = httpClient,
         });
     }
+
     public async Task<NotificationRecordEntity?> FindNotificationRecordAsync(Guid id)
     {
         using var scope = Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
         return await dbContext.NotificationRecords.FindAsync(id);
     }
+
     private sealed class ResponseVersionHandler : DelegatingHandler
     {
         protected override async Task<HttpResponseMessage> SendAsync(
