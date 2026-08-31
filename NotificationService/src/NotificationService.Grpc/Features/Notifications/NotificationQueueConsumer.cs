@@ -126,9 +126,6 @@ public sealed class NotificationQueueConsumer(
         }
     }
 
-    // nack(requeue: false) -> RabbitMQ preusmeri poruku na notifications.dlx -> DLQ.
-    // Retry i dalje radi DB job (RetryFailedNotificationsJob), ovo je samo kanta
-    // za pregled + poison poruke.
     private async Task DeadLetterAsync(BasicDeliverEventArgs ea, string reason)
     {
         logger.LogWarning(
