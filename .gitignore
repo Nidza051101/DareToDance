@@ -59,6 +59,7 @@ appsettings.*.local.json
 secrets.json
 *.pfx
 *.p12
+secrets/
 
 # OS files
 .DS_Store
