@@ -18,4 +18,7 @@ public sealed class RabbitMqSettings
 
     [Required]
     public string Password { get; init; } = string.Empty;
+
+    [Required]
+    public string QueueName { get; init; } = string.Empty;
 }
