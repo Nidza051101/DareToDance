@@ -1,4 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using NotificationService.Infrastructure.Options;
+using RabbitMQ.Client;
 
 namespace NotificationService.Infrastructure.MessageQueue;
 
@@ -9,9 +12,13 @@ namespace NotificationService.Infrastructure.MessageQueue;
 // Obe se već pozivaju iz AddInfrastructure; za sada su prazne.
 public static class MessageQueueRegistration
 {
-    // OSOBA A: ovde ide  services.AddSingleton<IMessageQueue, RabbitMqMessageQueue>();
     public static IServiceCollection AddNotificationPublisher(this IServiceCollection services)
     {
+        services.AddSingleton<IMessageQueue, RabbitMqMessageQueue>();
+
+        services.AddHealthChecks()
+                .AddRabbitMQ(name: "rabbitmq", tags: ["ready"]);
+
         return services;
     }
 
