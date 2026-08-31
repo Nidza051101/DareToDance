@@ -13,34 +13,66 @@ public sealed class NotificationQueueConsumer(
     IServiceScopeFactory scopeFactory,
     ILogger<NotificationQueueConsumer> logger) : BackgroundService
 {
-    private const ushort PrefetchCount = 10;
+    private const ushort PrefetchCount = 100;
 
     private IChannel? _channel;
+    private string? _consumerTag;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _channel = await connection.CreateChannelAsync(stoppingToken);
-        await RabbitMqTopology.DeclareAsync(_channel, stoppingToken);
-        await _channel.BasicQosAsync(
-            prefetchSize: 0, prefetchCount: PrefetchCount, global: false,
-            cancellationToken: stoppingToken);
-
-        var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.ReceivedAsync += OnMessageAsync;
-
-        await _channel.BasicConsumeAsync(
-            queue: RabbitMqTopology.EmailQueue,
-            autoAck: false,
-            consumer: consumer,
-            cancellationToken: stoppingToken);
 
         try
         {
+            await RabbitMqTopology.DeclareAsync(_channel, stoppingToken);
+            await _channel.BasicQosAsync(
+                prefetchSize: 0, prefetchCount: PrefetchCount, global: false,
+                cancellationToken: stoppingToken);
+
+            var consumer = new AsyncEventingBasicConsumer(_channel);
+            consumer.ReceivedAsync += OnMessageAsync;
+
+            _consumerTag = await _channel.BasicConsumeAsync(
+                queue: RabbitMqTopology.EmailQueue,
+                autoAck: false,
+                consumer: consumer,
+                cancellationToken: stoppingToken);
+
             await Task.Delay(Timeout.Infinite, stoppingToken);
         }
         catch (OperationCanceledException)
         {
-            // gašenje — uredno zatvaranje kanala dolazi u 1.5
+            // normalno gašenje (stoppingToken je otkazan)
+        }
+        finally
+        {
+            await ShutdownAsync();
+        }
+    }
+
+    private async Task ShutdownAsync()
+    {
+        if (_channel is null)
+        {
+            return;
+        }
+
+        try
+        {
+            if (_consumerTag is not null)
+            {
+                await _channel.BasicCancelAsync(_consumerTag, cancellationToken: CancellationToken.None);
+            }
+
+            await _channel.CloseAsync(CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "NotificationConsumerShutdownError");
+        }
+        finally
+        {
+            await _channel.DisposeAsync();
         }
     }
 
