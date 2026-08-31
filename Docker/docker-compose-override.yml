@@ -5,7 +5,7 @@ services:
   notification:
     environment:
       EmailSettings__GmailAddress: dare02dance@gmail.com
-      EmailSettings__AppPassword: zglaezxshwqdftkl
+      EmailSettings__AppPassword: hjmfztozvfuizajx
       RabbitMq__Host: rabbitmq
       RabbitMq__Port: 5672
       RabbitMq__VirtualHost: /

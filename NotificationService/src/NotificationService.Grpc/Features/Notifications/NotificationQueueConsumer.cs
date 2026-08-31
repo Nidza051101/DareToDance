@@ -86,14 +86,14 @@ public sealed class NotificationQueueConsumer(
         catch (JsonException ex)
         {
             logger.LogError(ex, "NotificationDeserializeFailed");
-            await _channel!.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
+            await DeadLetterAsync(ea, "deserialize-failed");
             return;
         }
 
         if (msg is null)
         {
             logger.LogError("NotificationDeserializedNull");
-            await _channel!.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
+            await DeadLetterAsync(ea, "deserialize-null");
             return;
         }
 
@@ -122,7 +122,18 @@ public sealed class NotificationQueueConsumer(
         catch (Exception ex)
         {
             logger.LogError(ex, "NotificationProcessingFailed {NotificationRecordId}", msg.NotificationRecordId);
-            await _channel!.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
+            await DeadLetterAsync(ea, "processing-failed");
         }
+    }
+
+    // nack(requeue: false) -> RabbitMQ preusmeri poruku na notifications.dlx -> DLQ.
+    // Retry i dalje radi DB job (RetryFailedNotificationsJob), ovo je samo kanta
+    // za pregled + poison poruke.
+    private async Task DeadLetterAsync(BasicDeliverEventArgs ea, string reason)
+    {
+        logger.LogWarning(
+            "NotificationDeadLettered reason={Reason} routingKey={RoutingKey}",
+            reason, ea.RoutingKey);
+        await _channel!.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
     }
 }
