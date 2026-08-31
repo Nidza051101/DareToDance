@@ -11,7 +11,7 @@ public static class RabbitMqTopology
     public static string RoutingKeyFor(NotificationChannel channel) =>
         channel.ToString().ToLowerInvariant();
 
-        public static async Task DeclareAsync(IChannel channel, CancellationToken cancellationToken = default)
+    public static async Task DeclareAsync(IChannel channel, CancellationToken cancellationToken = default)
     {
         await channel.ExchangeDeclareAsync(
             exchange: Exchange, type: ExchangeType.Direct, durable: true, autoDelete: false,
