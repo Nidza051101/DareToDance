@@ -59,6 +59,7 @@ appsettings.*.local.json
 secrets.json
 *.pfx
 *.p12
+Docker/secrets/
 
 # OS files
 .DS_Store
@@ -70,4 +71,4 @@ desktop.ini
 *.tmp
 *~
 
-docker-compose.override.yml
+Docker/docker-compose.override.yml

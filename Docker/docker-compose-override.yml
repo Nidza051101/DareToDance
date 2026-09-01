@@ -5,4 +5,4 @@ services:
   notification:
     environment:
       EmailSettings__GmailAddress: dare02dance@gmail.com
-      EmailSettings__AppPassword: zglaezxshwqdftkl
+      EmailSettings__AppPassword: hjmfztozvfuizajx
