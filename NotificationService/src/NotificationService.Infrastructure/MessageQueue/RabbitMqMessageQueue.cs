@@ -1,5 +1,6 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Microsoft.Extensions.Options;
+using NotificationService.Domain.NotificationRecord;
 using NotificationService.Infrastructure.Options;
 using RabbitMQ.Client;
 
@@ -9,12 +10,10 @@ public sealed class RabbitMqMessageQueue : IMessageQueue, IAsyncDisposable
 {
     private readonly IConnection _connection;
     private readonly IChannel _channel;
-    private readonly string _queueName;
 
     public RabbitMqMessageQueue(IOptions<RabbitMqSettings> options)
     {
         var settings = options.Value;
-        _queueName = settings.QueueName;
 
         var factory = new ConnectionFactory
         {
@@ -31,13 +30,11 @@ public sealed class RabbitMqMessageQueue : IMessageQueue, IAsyncDisposable
             publisherConfirmationTrackingEnabled: true
         )).GetAwaiter().GetResult();
 
-        _channel.QueueDeclareAsync(
-            queue: _queueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false).GetAwaiter().GetResult();
+        // Isti exchange / red / DLX koje deklariše i consumer. Deklaracija je
+        // idempotentna, pa je bezbedno da je zovu obe strane — publisher je
+        // ovde da bi exchange postojao i kad consumer još nije startovao.
+        RabbitMqTopology.DeclareAsync(_channel).GetAwaiter().GetResult();
     }
-
 
     public async Task EnqueueAsync(QueuedNotification notification, CancellationToken cancellationToken)
     {
@@ -45,17 +42,16 @@ public sealed class RabbitMqMessageQueue : IMessageQueue, IAsyncDisposable
 
         var props = new BasicProperties
         {
-            Persistent = true,        
-            ContentType = "application/json" 
+            Persistent = true,
+            ContentType = "application/json"
         };
 
-        
         await _channel.BasicPublishAsync(
-            exchange: string.Empty,   
-            routingKey: _queueName,  
-            mandatory: true,          
-            basicProperties: props,   
-            body: body,              
+            exchange: RabbitMqTopology.Exchange,
+            routingKey: RabbitMqTopology.RoutingKeyFor(notification.Channel),
+            mandatory: true,
+            basicProperties: props,
+            body: body,
             cancellationToken: cancellationToken);
     }
 

@@ -16,8 +16,25 @@ public static class MessageQueueRegistration
     {
         services.AddSingleton<IMessageQueue, RabbitMqMessageQueue>();
 
+        // Zdravstvena provera otvara sopstvenu vezu iz istih podešavanja;
+        // pravi je tek pri prvom /health pozivu, ne na startu hosta.
         services.AddHealthChecks()
-                .AddRabbitMQ(name: "rabbitmq", tags: ["ready"]);
+                .AddRabbitMQ(
+                    async sp =>
+                    {
+                        var s = sp.GetRequiredService<IOptions<RabbitMqSettings>>().Value;
+                        var factory = new ConnectionFactory
+                        {
+                            HostName = s.Host,
+                            Port = s.Port,
+                            VirtualHost = s.VirtualHost,
+                            UserName = s.Username,
+                            Password = s.Password,
+                        };
+                        return await factory.CreateConnectionAsync();
+                    },
+                    name: "rabbitmq",
+                    tags: ["ready"]);
 
         return services;
     }
