@@ -37,9 +37,6 @@ public static class DependencyInjection
 
         services.AddScoped<IEmailSender, GmailEmailSender>();
 
-        services.AddSingleton<InMemoryMessageQueue>();
-        services.AddSingleton<IMessageQueue>(sp => sp.GetRequiredService<InMemoryMessageQueue>());
-
         services.AddDbContext<NotificationDbContext>(options =>
             options.UseInMemoryDatabase("notifications"));
 

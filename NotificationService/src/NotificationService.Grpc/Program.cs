@@ -21,6 +21,11 @@ var app = builder.Build();
     app.MapGet("/", () =>
         "NotificationService.Grpc — komunikacija ide preko gRPC klijenta, ne browsera.");
 
+    app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+    {
+        Predicate = check => check.Tags.Contains("ready")
+    });
+
     app.Run();
 }
 

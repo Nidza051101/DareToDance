@@ -1,8 +1,0 @@
-services:
-  api:
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-  notification:
-    environment:
-      EmailSettings__GmailAddress: dare02dance@gmail.com
-      EmailSettings__AppPassword: hjmfztozvfuizajx
