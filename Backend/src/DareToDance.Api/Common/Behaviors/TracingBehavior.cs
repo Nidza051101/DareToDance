@@ -7,6 +7,7 @@ namespace DareToDance.Api.Common.Behaviors;
 public sealed class TracingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
+    //nikolicaprikolica
     private static readonly string SpanName = GetSpanName(typeof(TRequest));
 
     public async Task<TResponse> Handle(
